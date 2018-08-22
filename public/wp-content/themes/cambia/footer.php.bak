@@ -122,13 +122,17 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<!--script src="https://code.jquery.com/jquery-1.10.2.min.js"></script-->
-<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="<?php echo get_template_directory_uri(); ?>/js/bootstrap.min.js"></script>
+	
+	
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="<?php echo get_template_directory_uri(); ?>/js/bootstrap.min.js"></script>
+	
+	
+	
+	<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="<?php echo get_template_directory_uri(); ?>/js/jquery.meanmenu.js"></script>
 <script>
 	jQuery(document).ready(function () {
@@ -140,13 +144,16 @@
  $(window).scroll(function(){
   if ($(window).scrollTop() >= 150) {
     $('.mean-bar ').addClass('is-sticky');
-	$('.mobile_logo ').addClass('is-sticky');
-	$('.mean-nav ').addClass('is-sticky');
+	  $('.mobile_logo ').addClass('is-sticky');
+	    $('.mean-nav ').addClass('is-sticky');
+	  
+	  
    }
    else {
     $('.mean-bar ').removeClass('is-sticky');
-	$('.mobile_logo  ').removeClass('is-sticky');
-	$('.mean-nav ').removeClass('is-sticky');
+	 $('.mobile_logo  ').removeClass('is-sticky');
+	   $('.mean-nav ').removeClass('is-sticky');
+	   
    }
 });
 
