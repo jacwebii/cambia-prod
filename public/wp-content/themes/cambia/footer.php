@@ -128,6 +128,7 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <!--script src="https://code.jquery.com/jquery-1.10.2.min.js"></script-->
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="<?php echo get_template_directory_uri(); ?>/js/bootstrap.min.js"></script>
 <script src="<?php echo get_template_directory_uri(); ?>/js/jquery.meanmenu.js"></script>
 <script>
