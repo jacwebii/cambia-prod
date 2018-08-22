@@ -124,6 +124,33 @@
 </div><!-- /.modal -->
 	
 	
+	
+	
+	 <?php if(is_front_page()) { ?>
+   <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+
+  <!-- FlexSlider -->
+  <script defer src="<?php echo get_template_directory_uri(); ?>/js/jquery.flexslider.js"></script>
+
+  <script type="text/javascript">
+/*    $(function(){
+      SyntaxHighlighter.all();
+    });*/
+    $(window).load(function(){
+      $('.flexslider').flexslider({
+        animation: "slide",
+        start: function(slider){
+          $('body').removeClass('loading');
+        }
+      });
+    });
+  </script>
+
+<?php } ?>
+
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -162,7 +189,7 @@
  
  
  
- <?php if(is_front_page()) { ?>
+<?php /*?> <?php if(is_front_page()) { ?>
    <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
@@ -184,7 +211,7 @@
     });
   </script>
 
-<?php } ?>
+<?php } ?><?php */?>
 
  
 <?php /*?>	<?php if(is_front_page()) { ?>
