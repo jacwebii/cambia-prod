@@ -36,19 +36,25 @@ iframe {
 
 .home_top_video .wrapper {
   position: relative;
-  padding-bottom: 200%;
-  transform: translateY(-35.95%);
+  padding-bottom:0;
+ 
 }
   </style>
 
 <div class="home_top_video">
 <div class="top">
 <div class="wrapper">
-<iframe src="https://player.vimeo.com/video/279692490?title=0&byline=0&portrait=0&transparent=0&autoplay=1&loop=1&muted=1" width="640" height="480" frameborder="0" title="Funny Cat Videos For Kids" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" data-ready="true"></iframe>
-</div>
-</div>
-</div>
 
+<!-- The video   padding-bottom:200%; transform: translateY(-35.95%); -->
+<video autoplay muted loop id="myVideo">
+  <source src="https://cambia-images.s3.amazonaws.com/1036897694.mp4" type="video/mp4">
+</video>
+
+
+
+</div>
+</div>
+</div>
 
 
 
@@ -58,22 +64,19 @@ iframe {
 <!--//player.vimeo.com/video/200017927?background=1&muted=1&autoplay=1&loop=1&badge=0&byline=0&title=0&portrait=0
 https://player.vimeo.com/video/279692490?autoplay=1&loop=1&title=0&byline=0&portrait=0-->
 <!--<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/279692490?autoplay=1&loop=1&badge=0&byline=0&title=0&portrait=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>-->
-<video autoplay muted loop poster="<?php echo get_template_directory_uri(); ?>/img/video-poster.png">
-<source src="<?php the_field('top_video');?>" type="video/mp4">
-<source src="<?php the_field('top_video_ogv');?>" type="video/ogv">
-<source src="<?php the_field('top_video_webm');?>" type="video/webm">
-</video> 
+<?php */?>
+
 
 
 <script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/js/jquery.js"></script>	
 <script type="text/javascript">
 $(document).ready(function(){
-    document.getElementById('vid').play();
+   // document.getElementById('vid').play();
 });
 </script>
 
 
-</div><?php */?>
+</div>
 
 <!--Video Section Ends Here-->	
 
