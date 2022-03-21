@@ -14,7 +14,7 @@
     "require": {
         "ext-gd": "*",
         "php": "7.*",
-        "WordPress/WordPress": "*",
+        "wordpress/wordpress": "*",
         "wpackagist-plugin/secure-db-connection": "~1",
         "humanmade/s3-uploads": "~2",
         "deliciousbrains/wp-amazon-s3-and-cloudfront": "~1",
@@ -31,7 +31,7 @@
         {
             "type": "package",
             "package": {
-                "name": "WordPress/WordPress",
+                "name": "wordpress/wordpress",
                 "version": "4.9.8",
                 "dist": {
                     "type": "zip",
@@ -60,7 +60,7 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "./support/app_slug_compile.sh"
+            "chmod +x ./support/app_slug_compile.sh && ./support/app_slug_compile.sh"
         ]
     }
 }
