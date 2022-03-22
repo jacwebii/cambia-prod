@@ -7,11 +7,11 @@
     "content-hash": "57f3acc69f4057583e019eab99301e00",
     "packages": [
         {
-            "name": "WordPress/WordPress",
-            "version": "4.9.8",
+            "name": "wordpress/wordpress",
+            "version": "5.9.2",
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/WordPress/WordPress/archive/4.9.8.zip",
+                "url": "https://github.com/WordPress/WordPress/archive/5.9.2.zip",
                 "reference": null,
                 "shasum": null
             },
