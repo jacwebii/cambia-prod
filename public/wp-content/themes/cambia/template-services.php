@@ -7,6 +7,7 @@ get_header();?>
 <style>
 #about-service-section p{padding: 0;margin-bottom:0;}
 .about-service-block {min-height: 330px;}
+
 </style>
 <!--Product Tab Section-->
 	<section id="product-tab-section">

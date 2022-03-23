@@ -5,6 +5,10 @@
   */
 ?>
 
+<style>
+#about-service-section p{padding: 0;margin-bottom:0;}
+.about-service-block {min-height: 330px;}
+</style>
 
 <?php  if( ! (is_front_page() || is_page( 'research-in-action' ) || is_page( 'full-service-solutions' ))) {?>
 	<!-- Cambia Business -->
