@@ -3,10 +3,9 @@
  * WPSEO plugin file.
  *
  * @package WPSEO\Admin\Views
- */
-
-/**
- * @var Yoast_Form $yform
+ *
+ * @uses Yoast_Form $yform                                   Form object.
+ * @uses array      WPSEO_Option_Social::$twitter_card_types
  */
 
 if ( ! defined( 'WPSEO_VERSION' ) ) {
@@ -16,6 +15,11 @@ if ( ! defined( 'WPSEO_VERSION' ) ) {
 }
 
 echo '<h2>' . esc_html__( 'Twitter settings', 'wordpress-seo' ) . '</h2>';
+
+printf(
+	'<p>%s</p>',
+	esc_html__( 'Twitter uses Open Graph metadata just like Facebook, so be sure to keep the "Add Open Graph meta data" setting on the Facebook tab enabled if you want to optimize your site for Twitter.', 'wordpress-seo' )
+);
 
 $yform->light_switch( 'twitter', __( 'Add Twitter card meta data', 'wordpress-seo' ) );
 

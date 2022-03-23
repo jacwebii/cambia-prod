@@ -9,33 +9,25 @@
  * Changes the asset paths to dev server paths.
  */
 final class WPSEO_Admin_Asset_Dev_Server_Location implements WPSEO_Admin_Asset_Location {
+
+	/**
+	 * Holds the dev server's default URL.
+	 *
+	 * @var string
+	 */
 	const DEFAULT_URL = 'http://localhost:8080';
 
 	/**
-	 * @var array
-	 */
-	private static $dev_server_script = array(
-		'commons',
-		'configuration-wizard',
-		'search-appearance',
-		'wp-seo-dashboard-widget',
-		'wp-seo-help-center',
-		'wp-seo-metabox',
-		'wp-seo-modal',
-		'wp-seo-post-scraper',
-		'wp-seo-replacevar-plugin',
-		'wp-seo-term-scraper',
-		'wp-seo-modal',
-		'wp-seo-wp-globals-backport',
-	);
-
-	/**
+	 * Holds the url where the server is located.
+	 *
 	 * @var string
 	 */
 	private $url;
 
 	/**
-	 * @param string $url Where the dev server is located.
+	 * Class constructor.
+	 *
+	 * @param string|null $url Where the dev server is located.
 	 */
 	public function __construct( $url = null ) {
 		if ( $url === null ) {
@@ -54,7 +46,7 @@ final class WPSEO_Admin_Asset_Dev_Server_Location implements WPSEO_Admin_Asset_L
 	 * @return string The URL of the asset.
 	 */
 	public function get_url( WPSEO_Admin_Asset $asset, $type ) {
-		if ( WPSEO_Admin_Asset::TYPE_CSS === $type ) {
+		if ( $type === WPSEO_Admin_Asset::TYPE_CSS ) {
 			return $this->get_default_url( $asset, $type );
 		}
 
@@ -62,11 +54,11 @@ final class WPSEO_Admin_Asset_Dev_Server_Location implements WPSEO_Admin_Asset_L
 		$flat_version        = $asset_manager->flatten_version( WPSEO_VERSION );
 		$version_less_source = str_replace( '-' . $flat_version, '', $asset->get_src() );
 
-		if ( ! in_array( $version_less_source, self::$dev_server_script, true ) ) {
+		if ( strpos( $version_less_source, 'select2' ) !== false ) {
 			return $this->get_default_url( $asset, $type );
 		}
 
-		$path = sprintf( '%s%s.js', $asset->get_src(), $asset->get_suffix() );
+		$path = sprintf( 'js/dist/%s%s.js', $asset->get_src(), $asset->get_suffix() );
 
 		return trailingslashit( $this->url ) . $path;
 	}

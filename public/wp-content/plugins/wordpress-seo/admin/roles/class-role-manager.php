@@ -9,12 +9,13 @@
  * Role Manager interface.
  */
 interface WPSEO_Role_Manager {
+
 	/**
 	 * Registers a role.
 	 *
 	 * @param string      $role         Role to register.
 	 * @param string      $display_name Display name to use.
-	 * @param null|string $template     Optional. Role to base the new role on.
+	 * @param string|null $template     Optional. Role to base the new role on.
 	 *
 	 * @return void
 	 */

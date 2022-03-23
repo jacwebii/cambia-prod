@@ -6,23 +6,43 @@
  */
 
 /**
- * Represents the proxy for communicating with the database
+ * Represents the proxy for communicating with the database.
  */
 class WPSEO_Database_Proxy {
 
-	/** @var string */
+	/**
+	 * Holds the table name.
+	 *
+	 * @var string
+	 */
 	protected $table_name;
 
-	/** @var bool */
+	/**
+	 * Determines whether to suppress errors or not.
+	 *
+	 * @var bool
+	 */
 	protected $suppress_errors = true;
 
-	/** @var bool */
+	/**
+	 * Determines if this table is multisite.
+	 *
+	 * @var bool
+	 */
 	protected $is_multisite_table = false;
 
-	/** @var bool */
+	/**
+	 * Holds the last suppressed state.
+	 *
+	 * @var bool
+	 */
 	protected $last_suppressed_state;
 
-	/** @var wpdb */
+	/**
+	 * Holds the WordPress database object.
+	 *
+	 * @var wpdb
+	 */
 	protected $database;
 
 	/**
@@ -73,7 +93,7 @@ class WPSEO_Database_Proxy {
 	 *
 	 * @param array $data         Data to update on the table.
 	 * @param array $where        Where condition as key => value array.
-	 * @param null  $format       Optional. data prepare format.
+	 * @param null  $format       Optional. Data prepare format.
 	 * @param null  $where_format Optional. Where prepare format.
 	 *
 	 * @return false|int False when the update request is invalid, int on number of rows changed.
@@ -93,10 +113,10 @@ class WPSEO_Database_Proxy {
 	 *
 	 * Performs an insert into and if key is duplicate it will update the existing record.
 	 *
-	 * @param array $data         Data to update on the table.
-	 * @param array $where        Unused. Where condition as key => value array.
-	 * @param null  $format       Optional. Data prepare format.
-	 * @param null  $where_format Deprecated. Where prepare format.
+	 * @param array      $data         Data to update on the table.
+	 * @param array|null $where        Unused. Where condition as key => value array.
+	 * @param null       $format       Optional. Data prepare format.
+	 * @param null       $where_format Deprecated. Where prepare format.
 	 *
 	 * @return false|int False when the upsert request is invalid, int on number of rows changed.
 	 */
@@ -107,8 +127,8 @@ class WPSEO_Database_Proxy {
 
 		$this->pre_execution();
 
-		$update  = array();
-		$keys    = array();
+		$update  = [];
+		$keys    = [];
 		$columns = array_keys( $data );
 		foreach ( $columns as $column ) {
 			$keys[]   = '`' . $column . '`';
@@ -139,7 +159,7 @@ class WPSEO_Database_Proxy {
 	 * Deletes a record from the database.
 	 *
 	 * @param array      $where  Where clauses for the query.
-	 * @param null|array $format Formats for the data.
+	 * @param array|null $format Formats for the data.
 	 *
 	 * @return false|int
 	 */
@@ -158,7 +178,7 @@ class WPSEO_Database_Proxy {
 	 *
 	 * @param string $query The query to execute.
 	 *
-	 * @return array|null|object The resultset
+	 * @return array|object|null The resultset
 	 */
 	public function get_results( $query ) {
 		$this->pre_execution();
@@ -178,9 +198,9 @@ class WPSEO_Database_Proxy {
 	 *
 	 * @return bool True when creation is successful.
 	 */
-	public function create_table( array $columns, array $indexes = array() ) {
-		$create_table = sprintf( '
-				CREATE TABLE IF NOT EXISTS %1$s ( %2$s ) %3$s',
+	public function create_table( array $columns, array $indexes = [] ) {
+		$create_table = sprintf(
+			'CREATE TABLE IF NOT EXISTS %1$s ( %2$s ) %3$s',
 			$this->get_table_name(),
 			implode( ',', array_merge( $columns, $indexes ) ),
 			$this->database->get_charset_collate()

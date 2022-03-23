@@ -39,6 +39,10 @@ iframe {
   padding-bottom:0;
  
 }
+.proud-partner-heading{padding:0;}
+#proud-partners-section{padding: 50px 50px;}
+.home .service-block{min-height: 300px;}
+
   </style>
 
 <div class="home_top_video">
