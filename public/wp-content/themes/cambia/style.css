@@ -363,11 +363,20 @@ section.module.founder-rose-section {background:url("img/parallax-background.jpg
 #parallax-section p{font-size:16px; color:#fff; padding:0 10%; margin:0; line-height:38px} 
 
 
+/*  background: rgba(0, 0, 0, 0) url("img/bottom-border.png") no-repeat scroll center bottom; */
 #proud-partners-section {
-    background: rgba(0, 0, 0, 0) url("img/bottom-border.png") no-repeat scroll center bottom;
+   
+    background-image: linear-gradient(#fff, #f6f6f6);
     float: left;
-    padding: 50px 0;
+    padding: 100px 100px;
     width: 100%;
+    border-bottom: 2px solid #f6f6f6;
+}
+
+.about-service-block{
+    padding: 60px 20px;
+    box-shadow: 0px 0px 14px 0px rgb(201, 201, 201);
+
 }
 .proud-partner-heading{/*border-right:1px solid #e3e3e3;*/ padding:25px 25px 0 0; margin-right:0px;}
 .proud-partner-heading h4{color:#333333; font-size:18px; text-align:left; margin:0 0 10px 0; padding:0; font-weight:600;}
@@ -607,7 +616,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#60c29f', end
 .innovative-heading-text ul li {
     background: rgba(0, 0, 0, 0) url("img/bullet.png") no-repeat scroll 0 6px;
     float: left;
-    line-height: 36px;
+    line-height: 28px;
     list-style-type: none;
     margin: 0;
     padding: 0 0 1px 43px;

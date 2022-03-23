@@ -183,7 +183,7 @@ query_posts($args);
 $content = strip_tags($content);
 echo substr($content, 0, 390); ?>...</p>
          <?php //echo substr(get_the_excerpt(),0,300);?>
-          <?php if( get_field('read_more_link') ) { ?><a class="green-btn" href="<?php the_field('read_more_link');?>">Read More</a><?php } ?>
+          <?php if( get_field('read_more_link') ) { ?><a class="green-btn" href="<?php the_field('read_more_link');?>" target="_blank">Read More</a><?php } ?>
 		  </li>
 		    	    		
 		  <?php endwhile; ?>

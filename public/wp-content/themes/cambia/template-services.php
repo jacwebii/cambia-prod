@@ -118,7 +118,7 @@ if (have_posts()) : while (have_posts()) : the_post(); ?>
 <ul>
 <?php while(has_sub_field('bottom_lef_content_list')): $i++; ?>
 <li class="innovative-design-link section-<?php echo $i; ?>">
-<h5><?php the_sub_field('list_title'); ?></h5>
+<?php the_sub_field('list_title'); ?>
 <p><?php the_sub_field('list_content'); ?></p>
 </li>
 <?php endwhile; ?>
