@@ -19,7 +19,7 @@ if (!isset($collapseable)) {
 			<div class="wf-block-header">
 				<div class="wf-block-header-content">
 					<div class="wf-block-title">
-						<strong><?php _e('General Wordfence Options', 'wordfence'); ?></strong>
+						<strong><?php esc_html_e('General Wordfence Options', 'wordfence'); ?></strong>
 					</div>
 					<?php if ($collapseable): ?><div class="wf-block-header-action"><div class="wf-block-header-action-disclosure" role="checkbox" aria-checked="<?php echo (wfPersistenceController::shared()->isActive($stateKey) ? 'true' : 'false'); ?>" tabindex="0"></div></div><?php endif; ?>
 				</div>
@@ -28,12 +28,12 @@ if (!isset($collapseable)) {
 				<ul class="wf-block-list">
 					<li>
 						<?php
-						$subtitle = __('Automatically updates Wordfence to the newest version within 24 hours of a new release.', 'wordfence');
+						$subtitle = esc_html__('Automatically updates Wordfence to the newest version within 24 hours of a new release.', 'wordfence');
 						if (!wfConfig::get('other_bypassLitespeedNoabort', false) && getenv('noabort') != '1' && stristr($_SERVER['SERVER_SOFTWARE'], 'litespeed') !== false) {
 							$subtitle .= '<br><br>';
-							$subtitle .= __('<span class="wf-red-dark">Warning:</span> You are running the LiteSpeed web server and Wordfence can\'t determine whether "noabort" is set. Please verify that the environmental variable "noabort" is set for the local site, or the server\'s global External Application Abort is set to "No Abort".', 'wordfence');
+							$subtitle .= wp_kses(__('<span class="wf-red-dark">Warning:</span> You are running the LiteSpeed web server and Wordfence can\'t determine whether "noabort" is set. Please verify that the environmental variable "noabort" is set for the local site, or the server\'s global External Application Abort is set to "No Abort".', 'wordfence'), array('span'=>array('class'=>array())));
 							$subtitle .= '<br>';
-							$subtitle .= '<a href="' . wfSupportController::esc_supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_LITESPEED_WARNING) . '" target="_blank" rel="noopener noreferrer">' . __('Please read this article in our FAQ to make an important change that will ensure your site stability during an update.', 'wordfence') . '</a>';
+							$subtitle .= '<a href="' . wfSupportController::esc_supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_LITESPEED_WARNING) . '" target="_blank" rel="noopener noreferrer">' . esc_html__('Please read this article in our FAQ to make an important change that will ensure your site stability during an update.', 'wordfence') . '<span class="screen-reader-text"> (' . esc_html__('opens in new tab', 'wordfence') . ')</span></a>';
 						}
 						
 						echo wfView::create('options/option-toggled', array(
@@ -51,7 +51,7 @@ if (!isset($collapseable)) {
 						<?php
 						echo wfView::create('options/option-text', array(
 							'textOptionName' => 'alertEmails',
-							'textValue' => wfConfig::get('alertEmails'),
+							'textValue' => implode(',', wfConfig::getAlertEmails()),
 							'title' => __('Where to email alerts', 'wordfence'),
 							'placeholder' => __('Separate multiple addresses with commas', 'wordfence'),
 							'helpLink' => wfSupportController::supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_ALERT_EMAILS),
@@ -84,19 +84,6 @@ if (!isset($collapseable)) {
 							'value' => wfConfig::get('disableCodeExecutionUploads') ? 1 : 0,
 							'title' => __('Disable Code Execution for Uploads directory', 'wordfence'),
 							'helpLink' => wfSupportController::supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_DISABLE_UPLOADS_EXECUTION),
-						))->render();
-						?>
-					</li>
-					<li>
-						<?php
-						echo wfView::create('options/option-toggled', array(
-							'optionName' => 'disableCookies',
-							'enabledValue' => 1,
-							'disabledValue' => 0,
-							'value' => wfConfig::get('disableCookies') ? 1 : 0,
-							'title' => __('Disable Wordfence Cookies', 'wordfence'),
-							'subtitle' => __('When enabled, all visits in live traffic will appear to be new visits.', 'wordfence'),
-							'helpLink' => wfSupportController::supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_DISABLE_COOKIES),
 						))->render();
 						?>
 					</li>
@@ -143,6 +130,7 @@ if (!isset($collapseable)) {
 							'disabledValue' => 0,
 							'value' => wfConfig::get('deleteTablesOnDeact') ? 1 : 0,
 							'title' => __('Delete Wordfence tables and data on deactivation', 'wordfence'),
+							'subtitle' => __('Note: This does not include Login Security settings and tables. An option to delete those must be selected separately on the Login Security settings page.', 'wordfence'),
 							'helpLink' => wfSupportController::supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_DELETE_DEACTIVATION),
 						))->render();
 						?>

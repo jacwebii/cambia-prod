@@ -155,12 +155,15 @@ class wfScanner {
 	 */
 	public static function quickScanTypeOptions() {
 		$oldVersions = true;
+		$wafStatus = true;
 		if (wfConfig::get('scanType') == self::SCAN_TYPE_CUSTOM) { //Obey the setting in custom if that's the true scan type
 			$oldVersions = wfConfig::get('scansEnabled_oldVersions');
+			$wafStatus = wfConfig::get('scansEnabled_wafStatus');
 		}
 		
 		return array_merge(self::_inactiveScanOptions(), array(
 			'scansEnabled_oldVersions' => $oldVersions,
+			'scansEnabled_wafStatus' => $wafStatus,
 		));
 	}
 	
@@ -177,6 +180,7 @@ class wfScanner {
 			'scansEnabled_fileContentsGSB' => true,
 			'scansEnabled_suspiciousOptions' => true,
 			'scansEnabled_oldVersions' => true,
+			'scansEnabled_wafStatus' => true,
 			'lowResourceScansEnabled' => true,
 			'scan_exclude' => wfConfig::get('scan_exclude', ''),
 			'scan_include_extra' => wfConfig::get('scan_include_extra', ''),
@@ -209,7 +213,7 @@ class wfScanner {
 			'scansEnabled_suspiciousAdminUsers' => true,
 			'scansEnabled_passwds' => true,
 			'scansEnabled_diskSpace' => true,
-			'scansEnabled_dns' => true,
+			'scansEnabled_wafStatus' => true,
 			'scan_exclude' => wfConfig::get('scan_exclude', ''),
 			'scan_include_extra' => wfConfig::get('scan_include_extra', ''),
 			'scansEnabled_geoipSupport' => true,
@@ -243,10 +247,9 @@ class wfScanner {
 			'scansEnabled_suspiciousAdminUsers' => true,
 			'scansEnabled_passwds' => true,
 			'scansEnabled_diskSpace' => true,
-			'scansEnabled_dns' => true,
+			'scansEnabled_wafStatus' => true,
 			'other_scanOutside' => true,
 			'scansEnabled_scanImages' => true,
-			'scansEnabled_highSense' => true,
 			'scan_exclude' => wfConfig::get('scan_exclude', ''),
 			'scan_include_extra' => wfConfig::get('scan_include_extra', ''),
 			'scansEnabled_geoipSupport' => true,
@@ -265,6 +268,7 @@ class wfScanner {
 		}
 		
 		$allOptions['scansEnabled_geoipSupport'] = true;
+		$allOptions['scansEnabled_highSense'] = false; //deprecated
 		
 		return $allOptions;
 	}
@@ -298,7 +302,7 @@ class wfScanner {
 			'scansEnabled_suspiciousAdminUsers' => false,
 			'scansEnabled_passwds' => false,
 			'scansEnabled_diskSpace' => false,
-			'scansEnabled_dns' => false,
+			'scansEnabled_wafStatus' => false,
 			'other_scanOutside' => false,
 			'scansEnabled_scanImages' => false,
 			'scansEnabled_highSense' => false,
@@ -335,7 +339,7 @@ class wfScanner {
 			'scansEnabled_plugins' => 0,
 			'scansEnabled_coreUnknown' => 0.05,
 			'scansEnabled_malware' => 0.05,
-			'scansEnabled_fileContents' => 0.05,
+			'scansEnabled_fileContents' => 0.1,
 			'scan_include_extra' => 0,
 			'scansEnabled_fileContentsGSB' => 0.05,
 			'scansEnabled_posts' => 0.05,
@@ -345,13 +349,13 @@ class wfScanner {
 			'scansEnabled_suspiciousAdminUsers' => 0.05,
 			'scansEnabled_passwds' => 0.05,
 			'scansEnabled_diskSpace' => 0.05,
-			'scansEnabled_dns' => 0.05,
 			'other_scanOutside' => 0,
 			'scansEnabled_scanImages' => 0,
 			'scansEnabled_highSense' => 0,
 			'lowResourceScansEnabled' => 0,
 			'scan_exclude' => 0,
 			'scansEnabled_geoipSupport' => 0,
+			'scansEnabled_wafStatus' => 0,
 		);
 	}
 	
@@ -475,6 +479,7 @@ class wfScanner {
 	 * @return array
 	 */
 	private function _scanJobsForStage($stage) {
+		$always = array();
 		$options = array();
 		switch ($stage) {
 			case self::STAGE_SPAMVERTISING_CHECKS:
@@ -493,10 +498,15 @@ class wfScanner {
 				);
 				break;
 			case self::STAGE_SERVER_STATE:
+				if ($this->scanType() != self::SCAN_TYPE_QUICK) {
+					$always = array(
+						'checkSkippedFiles',
+					);
+				}
 				$options = array(
 					'scansEnabled_checkHowGetIPs',
 					'scansEnabled_diskSpace',
-					'scansEnabled_dns',
+					'scansEnabled_wafStatus',
 					'scansEnabled_geoipSupport',
 				);
 				break;
@@ -553,7 +563,7 @@ class wfScanner {
 			}
 		}
 		
-		return $filteredOptions;
+		return array_merge($filteredOptions, $always);
 	}
 	
 	/**
@@ -587,9 +597,9 @@ class wfScanner {
 				continue;
 			}
 			
-			$options = $this->_scanJobsForStage($stage);
-			if (count($options)) {
-				$parameters['expected'] = count($options);
+			$jobs = $this->_scanJobsForStage($stage);
+			if (count($jobs)) {
+				$parameters['expected'] = count($jobs);
 			}
 			else {
 				$parameters['status'] = self::STATUS_DISABLED;
@@ -626,6 +636,9 @@ class wfScanner {
 		
 		$runningStatus[$stageID]['started'] += 1;
 		wfConfig::set_ser('scanStageStatuses', $runningStatus, false, wfConfig::DONT_AUTOLOAD);
+		if (wfCentral::isConnected()) {
+			wfCentral::updateScanStatus($runningStatus);
+		}
 	}
 	
 	/**
@@ -656,6 +669,10 @@ class wfScanner {
 		}
 		
 		wfConfig::set_ser('scanStageStatuses', $runningStatus, false, wfConfig::DONT_AUTOLOAD);
+		if (wfCentral::isConnected()) {
+			wfCentral::updateScanStatus($runningStatus);
+		}
+
 	}
 	
 	/**
@@ -758,7 +775,7 @@ class wfScanner {
 			$subtraction = min($this->_normalizedPercentageToDisplay($percentage), $remainingPercentage);
 			$statusList[] = array(
 				'percentage' => $subtraction,
-				'title' => sprintf(_nx('Enable %d scan option.', 'Enable %d scan options.', $disabledOptionCount,'wordfence'), number_format_i18n($disabledOptionCount)),
+				'title' => sprintf(_n('Enable %d scan option.', 'Enable %d scan options.', $disabledOptionCount,'wordfence'), number_format_i18n($disabledOptionCount)),
 			);
 		}
 
@@ -802,7 +819,7 @@ class wfScanner {
 		$reputationChecks = array(
 			'spamvertizeCheck' => __('Enable scan option to check if this website is being "Spamvertised".', 'wordfence'),
 			'checkSpamIP' => __('Enable scan option to check if your website IP is generating spam.', 'wordfence'),
-			'scansEnabled_checkGSB' => __('Enable scan option to check if your website is on a domain blacklist.', 'wordfence'),
+			'scansEnabled_checkGSB' => __('Enable scan option to check if your website is on a domain blocklist.', 'wordfence'),
 		);
 
 		foreach ($reputationChecks as $option => $optionLabel) {
@@ -848,9 +865,10 @@ class wfScanner {
 			'checkSpamIP' => array('checkSpamIP'), 
 			'checkGSB' => array('scansEnabled_checkGSB'),
 			'checkHowGetIPs' => array('scansEnabled_checkHowGetIPs'),
-			'dns' => array('scansEnabled_dns'),
 			'diskSpace' => array('scansEnabled_diskSpace'),
+			'wafStatus' => array('scansEnabled_wafStatus'),
 			'geoipSupport' => array('scansEnabled_geoipSupport'),
+			'checkSkippedFiles' => ($this->scanType() != self::SCAN_TYPE_QUICK), //Always runs except for quick
 			'knownFiles' => ($this->scanType() != self::SCAN_TYPE_QUICK), //Always runs except for quick, options are scansEnabled_core, scansEnabled_themes, scansEnabled_plugins, scansEnabled_coreUnknown, scansEnabled_malware
 			'checkReadableConfig' => array('scansEnabled_checkReadableConfig'),
 			'fileContents' => ($this->scanType() != self::SCAN_TYPE_QUICK), //Always runs except for quick, options are scansEnabled_fileContents and scansEnabled_fileContentsGSB
@@ -1179,9 +1197,15 @@ class wfScanner {
 						else if ($dayNumber > 6 && ($dayNumber % 7) == $currentDayOfWeekUTC && $currentHourUTC <= $hourNumber) { //It's one week from today but beyond the current hour, skip it this cycle
 							continue;
 						}
-						
+
 						$scanTime = $periodStart + $dayNumber * 86400 + $hourNumber * 3600 + wfWAFUtils::random_int(0, 3600);
-						wordfence::status(4, 'info', "Scheduled time for day {$dayNumber} hour {$hourNumber} is: " . wfUtils::formatLocalTime('l jS \of F Y h:i:s A P', $scanTime));
+						wordfence::status(4, 'info', sprintf(
+							/* translators: 1. Day of week. 2. Hour of day. 3. Localized date. */
+							__("Scheduled time for day %s hour %s is: %s", 'wordfence'),
+							$dayNumber,
+							$hourNumber,
+							wfUtils::formatLocalTime('l jS \of F Y h:i:s A P', $scanTime)
+						));
 						$this->scheduleSingleScan($scanTime);
 					}
 				}

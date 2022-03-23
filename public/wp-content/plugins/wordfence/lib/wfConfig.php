@@ -11,6 +11,7 @@ class wfConfig {
 	const TYPE_DOUBLE = 'double';
 	const TYPE_STRING = 'string';
 	const TYPE_ARRAY = 'array';
+	const TYPE_JSON = 'json';
 	
 	const OPTIONS_TYPE_GLOBAL = 'global';
 	const OPTIONS_TYPE_FIREWALL = 'firewall';
@@ -18,14 +19,12 @@ class wfConfig {
 	const OPTIONS_TYPE_SCANNER = 'scanner';
 	const OPTIONS_TYPE_TWO_FACTOR = 'twofactor';
 	const OPTIONS_TYPE_LIVE_TRAFFIC = 'livetraffic';
-	const OPTIONS_TYPE_COMMENT_SPAM = 'commentspam';
 	const OPTIONS_TYPE_DIAGNOSTICS = 'diagnostics';
 	const OPTIONS_TYPE_ALL = 'all';
 	
 	public static $diskCache = array();
 	private static $diskCacheDisabled = false; //enables if we detect a write fail so we don't keep calling stat()
 	private static $cacheDisableCheckDone = false;
-	private static $table = false;
 	private static $tableExists = true;
 	private static $cache = array();
 	private static $DB = false;
@@ -34,9 +33,8 @@ class wfConfig {
 	public static $defaultConfig = array(
 		//All exportable boolean options
 		"checkboxes" => array(
-			"alertOn_critical" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"alertOn_update" => array('value' => false, 'autoload' => self::AUTOLOAD),
-			"alertOn_warnings" => array('value' => true, 'autoload' => self::AUTOLOAD),
+			"alertOn_scanIssues" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"alertOn_throttle" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"alertOn_block" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"alertOn_loginLockout" => array('value' => true, 'autoload' => self::AUTOLOAD),
@@ -47,13 +45,13 @@ class wfConfig {
 			"alertOn_nonAdminLogin" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"alertOn_firstNonAdminLoginOnly" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"alertOn_wordfenceDeactivated" => array('value' => true, 'autoload' => self::AUTOLOAD),
-			"liveTrafficEnabled" => array('value' => true, 'autoload' => self::AUTOLOAD),
+			"alertOn_wafDeactivated" => array('value' => true, 'autoload' => self::AUTOLOAD),
+			"liveTrafficEnabled" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"advancedCommentScanning" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"checkSpamIP" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"spamvertizeCheck" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"liveTraf_ignorePublishers" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"liveTraf_displayExpandedRecords" => array('value' => false, 'autoload' => self::DONT_AUTOLOAD),
-			//"perfLoggingEnabled" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"scheduledScansEnabled" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"lowResourceScansEnabled" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_checkGSB" => array('value' => true, 'autoload' => self::AUTOLOAD),
@@ -72,17 +70,16 @@ class wfConfig {
 			"scansEnabled_suspiciousOptions" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_passwds" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_diskSpace" => array('value' => true, 'autoload' => self::AUTOLOAD),
+			'scansEnabled_wafStatus' => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_options" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_wpscan_fullPathDisclosure" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_wpscan_directoryListingEnabled" => array('value' => true, 'autoload' => self::AUTOLOAD),
-			"scansEnabled_dns" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_scanImages" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_highSense" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_oldVersions" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"scansEnabled_suspiciousAdminUsers" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"liveActivityPauseEnabled" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"firewallEnabled" => array('value' => true, 'autoload' => self::AUTOLOAD),
-			"blockFakeBots" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"autoBlockScanners" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"loginSecurityEnabled" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"loginSec_strongPasswds_enabled" => array('value' => true, 'autoload' => self::AUTOLOAD),
@@ -91,6 +88,7 @@ class wfConfig {
 			"loginSec_maskLoginErrors" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"loginSec_blockAdminReg" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"loginSec_disableAuthorScan" => array('value' => true, 'autoload' => self::AUTOLOAD),
+			"loginSec_disableApplicationPasswords" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"loginSec_disableOEmbedAuthor" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			'loginSec_requireAdminTwoFactor' => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"notification_updatesNeeded" => array('value' => true, 'autoload' => self::AUTOLOAD),
@@ -100,7 +98,6 @@ class wfConfig {
 			"notification_productUpdates" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"notification_scanStatus" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"other_hideWPVersion" => array('value' => false, 'autoload' => self::AUTOLOAD),
-			"other_noAnonMemberComments" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"other_blockBadPOST" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"other_scanComments" => array('value' => true, 'autoload' => self::AUTOLOAD),
 			"other_pwStrengthOnUpdate" => array('value' => true, 'autoload' => self::AUTOLOAD),
@@ -109,7 +106,6 @@ class wfConfig {
 			"other_bypassLitespeedNoabort" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"deleteTablesOnDeact" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"autoUpdate" => array('value' => false, 'autoload' => self::AUTOLOAD),
-			"disableCookies" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"startScansRemotely" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"disableConfigCaching" => array('value' => false, 'autoload' => self::AUTOLOAD),
 			"addCacheComment" => array('value' => false, 'autoload' => self::AUTOLOAD),
@@ -128,6 +124,8 @@ class wfConfig {
 			'displayTopLevelBlocking' => array('value' => false, 'autoload' => self::AUTOLOAD),
 			'displayTopLevelLiveTraffic' => array('value' => false, 'autoload' => self::AUTOLOAD),
 			'displayAutomaticBlocks' => array('value' => true, 'autoload' => self::AUTOLOAD),
+			'allowLegacy2FA' => array('value' => false, 'autoload' => self::AUTOLOAD),
+			'wordfenceI18n' => array('value' => true, 'autoload' => self::AUTOLOAD),
 		),
 		//All exportable variable type options
 		"otherParams" => array(
@@ -140,7 +138,8 @@ class wfConfig {
 			'scan_exclude' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)), 
 			'scan_maxIssues' => array('value' => 1000, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_INT)), 
 			'scan_maxDuration' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)), 
-			'whitelisted' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)), 
+			'whitelisted' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
+			'whitelistedServices' => array('value' => '{}', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_JSON)),
 			'bannedURLs' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)), 
 			'maxExecutionTime' => array('value' => 0, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_INT)), 
 			'howGetIPs' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)), 
@@ -166,8 +165,6 @@ class wfConfig {
 			'max404Crawlers_action' => array('value' => "throttle", 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'max404Humans' => array('value' => 'DISABLED', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'max404Humans_action' => array('value' => "throttle", 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
-			'maxScanHits' => array('value' => 'DISABLED', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
-			'maxScanHits_action' => array('value' => "throttle", 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'blockedTime' => array('value' => 300, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_INT)),
 			'email_summary_interval' => array('value' => 'weekly', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'email_summary_excluded_directories' => array('value' => 'wp-content/cache,wp-content/wflogs', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
@@ -187,11 +184,13 @@ class wfConfig {
 			'cbl_bypassRedirDest' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'cbl_bypassViewURL' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'loginSec_enableSeparateTwoFactor' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
+			'blockCustomText' => array('value' => '', 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
+			'alertOn_severityLevel' => array('value' => wfIssues::SEVERITY_LOW, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_INT)),
 		),
 		//Set as default only, not included automatically in the settings import/export or options page saving
 		'defaultsOnly' => array(
 			"apiKey" => array('value' => "", 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
-			'keyType' => array('value' => wfAPI::KEY_TYPE_FREE, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
+			'keyType' => array('value' => wfLicense::KEY_TYPE_FREE, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'isPaid' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'hasKeyConflict' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'betaThreatDefenseFeed' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
@@ -208,19 +207,33 @@ class wfConfig {
 			'needsNewTour_scan' => array('value' => true, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'needsNewTour_blocking' => array('value' => true, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'needsNewTour_livetraffic' => array('value' => true, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
+			'needsNewTour_loginsecurity' => array('value' => true, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'needsUpgradeTour_dashboard' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'needsUpgradeTour_firewall' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'needsUpgradeTour_scan' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'needsUpgradeTour_blocking' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'needsUpgradeTour_livetraffic' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
+			'needsUpgradeTour_loginsecurity' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'supportContent' => array('value' => '{}', 'autoload' => self::DONT_AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'supportHash' => array('value' => '', 'autoload' => self::DONT_AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
+			'whitelistPresets' => array('value' => '{}', 'autoload' => self::DONT_AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
+			'whitelistHash' => array('value' => '', 'autoload' => self::DONT_AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 			'touppPromptNeeded' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'touppBypassNextCheck' => array('value' => false, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_BOOL)),
 			'autoUpdateAttempts' => array('value' => 0, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_INT)),
+			'lastPermissionsTemplateCheck' => array('value' => 0, 'autoload' => self::AUTOLOAD, 'validation' => array('type' => self::TYPE_INT)),
+			'previousWflogsFileList' => array('value' => '[]', 'autoload' => self::DONT_AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
+			'diagnosticsWflogsRemovalHistory' => array('value' => '[]', 'autoload' => self::DONT_AUTOLOAD, 'validation' => array('type' => self::TYPE_STRING)),
 		),
 	);
-	public static $serializedOptions = array('lastAdminLogin', 'scanSched', 'emailedIssuesList', 'wf_summaryItems', 'adminUserList', 'twoFactorUsers', 'alertFreqTrack', 'wfStatusStartMsgs', 'vulnerabilities_plugin', 'vulnerabilities_theme', 'dashboardData', 'malwarePrefixes', 'coreHashes', 'noc1ScanSchedule', 'allScansScheduled', 'disclosureStates', 'scanStageStatuses', 'adminNoticeQueue');
+	public static $serializedOptions = array('lastAdminLogin', 'scanSched', 'emailedIssuesList', 'wf_summaryItems', 'adminUserList', 'twoFactorUsers', 'alertFreqTrack', 'wfStatusStartMsgs', 'vulnerabilities_plugin', 'vulnerabilities_theme', 'dashboardData', 'malwarePrefixes', 'coreHashes', 'noc1ScanSchedule', 'allScansScheduled', 'disclosureStates', 'scanStageStatuses', 'adminNoticeQueue', 'suspiciousAdminUsernames', 'wordpressPluginVersions', 'wordpressThemeVersions');
+	// Configuration keypairs that can be set from Central.
+	private static $wfCentralInternalConfig = array(
+		'wordfenceCentralUserSiteAuthGrant',
+		'wordfenceCentralConnected',
+		'wordfenceCentralPluginAlertingDisabled',
+	);
+
 	public static function setDefaults() {
 		foreach (self::$defaultConfig['checkboxes'] as $key => $config) {
 			$val = $config['value'];
@@ -320,6 +333,11 @@ class wfConfig {
 			self::$tableExists = false;
 		}
 	}
+	
+	public static function tableExists() {
+		return self::$tableExists;
+	}
+	
 	private static function updateCachedOption($name, $val) {
 		$options = self::loadAllOptions();
 		$options[$name] = $val;
@@ -420,6 +438,8 @@ class wfConfig {
 		$old_suppress_errors = $wpdb->suppress_errors(true);
 		$table = self::table();
 		$rowExists = false;
+		$successful = false;
+		$attempts = 0;
 		do {
 			if (!$rowExists && $wpdb->query($wpdb->prepare("INSERT INTO {$table} (name, val, autoload) values (%s, %s, %s)", $key, 1, self::DONT_AUTOLOAD))) {
 				$val = 1;
@@ -433,7 +453,8 @@ class wfConfig {
 					$successful = true;
 				}
 			}
-		} while (!$successful);
+			$attempts++;
+		} while (!$successful && $attempts < 100);
 		$wpdb->suppress_errors($old_suppress_errors);
 		return $val;
 	}
@@ -456,7 +477,9 @@ class wfConfig {
 		global $wpdb;
 		
 		if (is_array($val)) {
-			$msg = "wfConfig::set() got an array as second param with key: $key and value: " . var_export($val, true);
+			$msg = sprintf(
+				/* translators: 1. Key in key-value store. 2. Value in key-value store. */
+				__('wfConfig::set() got an array as second param with key: %1$s and value: %2$s', 'wordfence'), $key, var_export($val, true));
 			wordfence::status(1, 'error', $msg);
 			return;
 		}
@@ -467,8 +490,10 @@ class wfConfig {
 			}
 			
 			try {
-				wfWAF::getInstance()->getStorageEngine()->setConfig($key, $val);
+				wfWAF::getInstance()->getStorageEngine()->setConfig($key, $val, 'synced');
 			} catch (wfWAFStorageFileException $e) {
+				error_log($e->getMessage());
+			} catch (wfWAFStorageEngineMySQLiException $e) {
 				error_log($e->getMessage());
 			}
 		}
@@ -486,7 +511,18 @@ class wfConfig {
 			wfWAFIPBlocksController::setNeedsSynchronizeConfigSettings();
 		} 
 	}
-	public static function get($key, $default = false, $allowCached = true) {
+	public static function setJSON($key, $val, $autoload = self::AUTOLOAD) {
+		self::set($key, @json_encode($val), $autoload);
+	}
+	public static function setOrRemove($key, $value, $autoload = self::AUTOLOAD) {
+		if ($value === null) {
+			self::remove($key);
+		}
+		else {
+			self::set($key, $value, $autoload);
+		}
+	}
+	public static function get($key, $default = false, $allowCached = true, &$isDefault = false) {
 		global $wpdb;
 		
 		if ($allowCached && self::hasCachedOption($key)) {
@@ -494,11 +530,13 @@ class wfConfig {
 		}
 		
 		if (!self::$tableExists) {
+			$isDefault = true;
 			return $default;
 		}
 		
 		$table = self::table();
 		if (!($option = $wpdb->get_row($wpdb->prepare("SELECT name, val, autoload FROM {$table} WHERE name = %s", $key)))) {
+			$isDefault = true;
 			return $default;
 		}
 		
@@ -510,6 +548,17 @@ class wfConfig {
 	
 	public static function getInt($key, $default = 0, $allowCached = true) {
 		return (int) self::get($key, $default, $allowCached);
+	}
+	
+	public static function getJSON($key, $default = false, $allowCached = true) {
+		$json = self::get($key, $default, $allowCached, $isDefault);
+		if ($isDefault)
+			return $json;
+		$decoded = @json_decode($json, true);
+		if ($decoded === null) {
+			return $default;
+		}
+		return $decoded;
 	}
 	
 	/**
@@ -587,7 +636,7 @@ class wfConfig {
 				$chunk = self::getDB()->querySingle("select val from " . self::table() . " where name=%s", $chunkedValueKey . $i);
 				self::getDB()->flush(); //clear cache
 				if (!$chunk) {
-					wordfence::status(2, 'error', "Error reassembling value for {$key}");
+					wordfence::status(2, 'error', sprintf(/* translators: Key in key-value store. */ __("Error reassembling value for %s", 'wordfence'), $key));
 					return $default;
 				}
 				fwrite($fh, $chunk);
@@ -647,7 +696,7 @@ class wfConfig {
 		
 		global $wpdb;
 		$dbh = $wpdb->dbh;
-		$useMySQLi = (is_object($dbh) && $wpdb->use_mysqli && wfConfig::get('allowMySQLi', true));
+		$useMySQLi = (is_object($dbh) && $wpdb->use_mysqli && wfConfig::get('allowMySQLi', true) && WORDFENCE_ALLOW_DIRECT_MYSQLI);
 		
 		if (!self::$tableExists) {
 			return;
@@ -679,26 +728,44 @@ class wfConfig {
 					$chunkKey = $chunkedValueKey . $chunks;
 					$stmt = $dbh->prepare("INSERT IGNORE INTO " . self::table() . " (name, val, autoload) VALUES (?, ?, 'no')");
 					if ($stmt === false) {
-						wordfence::status(2, 'error', "Error writing value chunk for {$key} (MySQLi error: [{$dbh->errno}] {$dbh->error})");
+						wordfence::status(2, 'error', sprintf(
+						/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+							__('Error writing value chunk for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $dbh->errno, $dbh->error));
 						return false;
 					}
 					$null = NULL;
 					$stmt->bind_param("sb", $chunkKey, $null);
 					
 					if (!$stmt->send_long_data(1, $dataChunk)) {
-						wordfence::status(2, 'error', "Error writing value chunk for {$key} (MySQLi error: [{$dbh->errno}] {$dbh->error})");
+						wordfence::status(2, 'error', sprintf(
+						/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+							__('Error writing value chunk for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $dbh->errno, $dbh->error));
 						return false;
 					}
 					
 					if (!$stmt->execute()) {
-						wordfence::status(2, 'error', "Error finishing writing value for {$key} (MySQLi error: [{$dbh->errno}] {$dbh->error})");
+						wordfence::status(2, 'error', sprintf(
+						/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+							__('Error writing value chunk for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $dbh->errno, $dbh->error));
 						return false;
 					}
 				}
 				else {
 					if (!self::getDB()->queryWrite(sprintf("insert ignore into " . self::table() . " (name, val, autoload) values (%%s, X'%s', 'no')", $dataChunk), $chunkedValueKey . $chunks)) {
-						$errno = mysql_errno($wpdb->dbh);
-						wordfence::status(2, 'error', "Error writing value chunk for {$key} (MySQL error: [$errno] {$wpdb->last_error})");
+						if ($useMySQLi) {
+							$errno = mysqli_errno($wpdb->dbh);
+							wordfence::status(2, 'error', sprintf(
+							/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+								__('Error writing value chunk for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $errno, $wpdb->last_error));
+						}
+						else if (function_exists('mysql_errno')) {
+							// phpcs:ignore PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved
+							$errno = mysql_errno($wpdb->dbh);
+							wordfence::status(2, 'error', sprintf(
+							/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+								__('Error writing value chunk for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $errno, $wpdb->last_error));
+						}
+						
 						return false;
 					}
 				}
@@ -706,7 +773,9 @@ class wfConfig {
 			}
 			
 			if (!self::getDB()->queryWrite(sprintf("insert ignore into " . self::table() . " (name, val, autoload) values (%%s, X'%s', 'no')", bin2hex(serialize(array('count' => $chunks)))), $chunkedValueKey . 'header')) {
-				wordfence::status(2, 'error', "Error writing value header for {$key}");
+				wordfence::status(2, 'error', sprintf(
+				/* translators: Key in key-value store. */
+					__("Error writing value header for %s", 'wordfence'), $key));
 				return false;
 			}
 		}
@@ -717,7 +786,9 @@ class wfConfig {
 				if ($exists) {
 					$stmt = $dbh->prepare("UPDATE " . self::table() . " SET val=? WHERE name=?");
 					if ($stmt === false) {
-						wordfence::status(2, 'error', "Error writing value for {$key} (MySQLi error: [{$dbh->errno}] {$dbh->error})");
+						wordfence::status(2, 'error', sprintf(
+						/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+							__('Error writing value for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $dbh->errno, $dbh->error));
 						return false;
 					}
 					$null = NULL;
@@ -726,7 +797,9 @@ class wfConfig {
 				else {
 					$stmt = $dbh->prepare("INSERT IGNORE INTO " . self::table() . " (val, name, autoload) VALUES (?, ?, ?)");
 					if ($stmt === false) {
-						wordfence::status(2, 'error', "Error writing value for {$key} (MySQLi error: [{$dbh->errno}] {$dbh->error})");
+						wordfence::status(2, 'error', sprintf(
+						/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+							__('Error writing value for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $dbh->errno, $dbh->error));
 						return false;
 					}
 					$null = NULL;
@@ -734,12 +807,16 @@ class wfConfig {
 				}
 				
 				if (!$stmt->send_long_data(0, $data)) {
-					wordfence::status(2, 'error', "Error writing value for {$key} (MySQLi error: [{$dbh->errno}] {$dbh->error})");
+					wordfence::status(2, 'error', sprintf(
+					/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+						__('Error writing value for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $dbh->errno, $dbh->error));
 					return false;
 				}
 				
 				if (!$stmt->execute()) {
-					wordfence::status(2, 'error', "Error finishing writing value for {$key} (MySQLi error: [{$dbh->errno}] {$dbh->error})");
+					wordfence::status(2, 'error', sprintf(
+					/* translators: 1. Key in key-value store. 2. MySQL error number. 3. MySQL error message. */
+					__('Error finishing writing value for %1$s (MySQLi error: [%2$s] %3$s)', 'wordfence'), $key, $dbh->errno, $dbh->error));
 					return false;
 				}
 			}
@@ -807,37 +884,39 @@ class wfConfig {
 		return self::$DB;
 	}
 	private static function table(){
-		if(! self::$table){
-			self::$table = wfDB::networkTable('wfConfig');
-		}
-		return self::$table;
+		return wfDB::networkTable('wfConfig');
 	}
 	public static function haveAlertEmails(){
 		$emails = self::getAlertEmails();
 		return sizeof($emails) > 0 ? true : false;
 	}
-	public static function getAlertEmails(){
+	public static function alertEmailBlacklist() {
+		return array('3c4aa9bd643bd9bb9873014227151a85b24ab8d72fe02cc5799b0edc56eabb67', 'aa06081e3962a3c17a85a06ddf9e418ca1ba8fead3f9b7a20beaf51848a1fd75', 'a25a360bded101e25ebabe5643161ddbb6c3fa33838bbe9a123c2ec0cda8d370', '36e8407dfa80d64cfe42ede4d9d5ce2d4840a5e4781b5f8a7b3b8eacec86fcad', '50cf95aec25369583efdfeff9f0818b4b9266f10e140ea2b648e30202450c21b', '72a09e746cb90ff2646ba1f1d0c0f5ffed6b380642bbbf826d273fffa6ef673b');
+	}
+	public static function getAlertEmails() {
+		$blacklist = self::alertEmailBlacklist();
 		$dat = explode(',', self::get('alertEmails'));
 		$emails = array();
-		foreach($dat as $email){
-			if(preg_match('/\@/', $email)){
-				$emails[] = trim($email);
+		foreach ($dat as $email) {
+			$email = strtolower(trim($email));
+			if (preg_match('/\@/', $email)) {
+				$hash = hash('sha256', $email);
+				if (!in_array($hash, $blacklist)) {
+					$emails[] = $email;
+				}
 			}
 		}
 		return $emails;
 	}
 	public static function getAlertLevel(){
-		if(self::get('alertOn_warnings')){
-			return 2;
-		} else if(self::get('alertOn_critical')){
-			return 1;
-		} else {
-			return 0;
+		if (self::get('alertOn_scanIssues')) {
+			return self::get('alertOn_severityLevel', 0);
 		}
+		return 0;
 	}
 	public static function liveTrafficEnabled(&$overriden = null){
 		$enabled = self::get('liveTrafficEnabled');
-		if (WORDFENCE_DISABLE_LIVE_TRAFFIC || function_exists('wpe_site')) {
+		if (WORDFENCE_DISABLE_LIVE_TRAFFIC || WF_IS_WP_ENGINE) {
 			$enabled = false;
 			if ($overriden !== null) {
 				$overriden = true;
@@ -856,69 +935,64 @@ class wfConfig {
 		wfConfig::set('autoUpdate', '0');	
 		wp_clear_scheduled_hook('wordfence_daily_autoUpdate');
 	}
-	public static function createLock($name, $timeout = null) { //Polyfill since WP's built-in version wasn't added until 4.5
+	public static function createLock($name, $timeout = null) { //Our own version of WP_Upgrader::create_lock that uses our table instead
 		global $wpdb;
-		$oldBlogID = $wpdb->set_blog_id(0);
-		
-		if (function_exists('WP_Upgrader::create_lock')) {
-			$result = WP_Upgrader::create_lock($name, $timeout);
-			$wpdb->set_blog_id($oldBlogID);
-			return $result;
-		}
 		
 		if (!$timeout) {
 			$timeout = 3600;
 		}
 		
+		$table = self::table();
+		
 		$lock_option = $name . '.lock';
-		$lock_result = $wpdb->query($wpdb->prepare("INSERT IGNORE INTO `{$wpdb->options}` (`option_name`, `option_value`, `autoload`) VALUES (%s, %s, 'no') /* LOCK */", $lock_option, time()));
+		$lock_result = $wpdb->query($wpdb->prepare("INSERT IGNORE INTO `$table` (`name`, `val`, `autoload`) VALUES (%s, %s, 'no')", $lock_option, time()));
 		
 		if (!$lock_result) {
-			$lock_result = get_option($lock_option);
+			$lock_result = self::get($lock_option, false, false);
 			if (!$lock_result) {
-				$wpdb->set_blog_id($oldBlogID);
 				return false;
 			}
 			
 			if ($lock_result > (time() - $timeout)) {
-				$wpdb->set_blog_id($oldBlogID);
 				return false;
 			}
 			
 			self::releaseLock($name);
-			$wpdb->set_blog_id($oldBlogID);
 			return self::createLock($name, $timeout);
 		}
 		
-		update_option($lock_option, time());
-		$wpdb->set_blog_id($oldBlogID);
 		return true;
 	}
 	public static function releaseLock($name) {
-		global $wpdb;
-		$oldBlogID = $wpdb->set_blog_id(0);
-		if (function_exists('WP_Upgrader::release_lock')) {
-			$result = WP_Upgrader::release_lock($name);
-		}
-		else {
-			$result = delete_option($name . '.lock');
-		}
-		
-		$wpdb->set_blog_id($oldBlogID);
-		return $result;
+		self::remove($name . '.lock');
 	}
 	public static function autoUpdate(){
+		// Prevent auto-update for PHP 5.2. Consider tying this into `wfVersionCheckController::PHP_DEPRECATING`.
+		if (version_compare(PHP_VERSION, '5.3', '<')) {
+			return;
+		}
+
+		// Prevent WF auto-update if the user has enabled auto-update through the plugins page.
+		if (version_compare(wfUtils::getWPVersion(), '5.5-x', '>=')) {
+			$autoUpdatePlugins = get_site_option('auto_update_plugins');
+			if (is_array($autoUpdatePlugins) && in_array(WORDFENCE_BASENAME, $autoUpdatePlugins)) {
+				return;
+			}
+		}
+
 		if (!wfConfig::get('other_bypassLitespeedNoabort', false) && getenv('noabort') != '1' && stristr($_SERVER['SERVER_SOFTWARE'], 'litespeed') !== false) {
 			$lastEmail = self::get('lastLiteSpdEmail', false);
 			if( (! $lastEmail) || (time() - (int)$lastEmail > (86400 * 30))){
 				self::set('lastLiteSpdEmail', time());
-				wordfence::alert("Wordfence Upgrade not run. Please modify your .htaccess", "To preserve the integrity of your website we are not running Wordfence auto-update.\n" .
+				wordfence::alert(
+				/* translators: Support URL. */
+				__("Wordfence Upgrade not run. Please modify your .htaccess", 'wordfence'), sprintf(__("To preserve the integrity of your website we are not running Wordfence auto-update.\n" .
 					"You are running the LiteSpeed web server which has been known to cause a problem with Wordfence auto-update.\n" .
 					"Please go to your website now and make a minor change to your .htaccess to fix this.\n" .
 					"You can find out how to make this change at:\n" .
-					wfSupportController::supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_LITESPEED_WARNING) . "\n" .
-					"\nAlternatively you can disable auto-update on your website to stop receiving this message and upgrade Wordfence manually.\n",
-					'127.0.0.1'
+					"%s\n" .
+					"\nAlternatively you can disable auto-update on your website to stop receiving this message and upgrade Wordfence manually.\n", 'wordfence'), wfSupportController::supportURL(wfSupportController::ITEM_DASHBOARD_OPTION_LITESPEED_WARNING)),
+					false
 				);
 			}
 			return;
@@ -975,9 +1049,13 @@ class wfConfig {
 			$upret = $upgrader->upgrade(WORDFENCE_BASENAME);
 			if($upret){
 				$cont = file_get_contents(WORDFENCE_FCPATH);
-				if(wfConfig::get('alertOn_update') == '1' && preg_match('/Version: (\d+\.\d+\.\d+)/', $cont, $matches) ){
-					wordfence::alert("Wordfence Upgraded to version " . $matches[1], "Your Wordfence installation has been upgraded to version " . $matches[1], '127.0.0.1');
-				}
+				preg_match('/Version: (\d+\.\d+\.\d+)/', $cont, $matches);
+				$version = !empty($matches) ? $matches[1] : null;
+				$alertCallback = array(new wfAutoUpdatedAlert($version), 'send');
+				do_action('wordfence_security_event', 'autoUpdate', array(
+					'version' => $version,
+				), $alertCallback);
+
 				wfConfig::set('autoUpdateAttempts', 0);
 			}
 			$output = @ob_get_contents();
@@ -995,6 +1073,9 @@ class wfConfig {
 php_flag engine 0
 </IfModule>
 <IfModule mod_php7.c>
+php_flag engine 0
+</IfModule>
+<IfModule mod_php.c>
 php_flag engine 0
 </IfModule>
 
@@ -1028,7 +1109,7 @@ Options -ExecCGI
 			$uploads_htaccess_has_content = strlen(trim($htaccess_contents)) > 0;
 		}
 		if (@file_put_contents($uploads_htaccess_file_path, ($uploads_htaccess_has_content ? "\n\n" : "") . self::$_disable_scripts_htaccess, FILE_APPEND | LOCK_EX) === false) {
-			throw new wfConfigException("Unable to save the .htaccess file needed to disable script execution in the uploads directory.  Please check your permissions on that directory.");
+			throw new wfConfigException(__("Unable to save the .htaccess file needed to disable script execution in the uploads directory. Please check your permissions on that directory.", 'wordfence'));
 		}
 		self::set('disableCodeExecutionUploadsPHP7Migrated', true);
 		return true;
@@ -1065,7 +1146,7 @@ Options -ExecCGI
 			if (preg_match(self::$_disable_scripts_regex, $htaccess_contents)) {
 				$htaccess_contents = preg_replace(self::$_disable_scripts_regex, '', $htaccess_contents);
 
-				$error_message = "Unable to remove code execution protections applied to the .htaccess file in the uploads directory.  Please check your permissions on that file.";
+				$error_message = __("Unable to remove code execution protections applied to the .htaccess file in the uploads directory. Please check your permissions on that file.", 'wordfence');
 				if (strlen(trim($htaccess_contents)) === 0) {
 					// empty file, remove it
 					if (!@unlink($uploads_htaccess_file_path)) {
@@ -1141,7 +1222,9 @@ Options -ExecCGI
 					$dirtyRegexes = explode("\n", $value);
 					foreach ($dirtyRegexes as $regex) {
 						if (@preg_match("/$regex/", "") === false) {
-							$errors[] = array('option' => $key, 'error' => sprintf(__('"%s" is not a valid regular expression.', 'wordfence'), esc_html($regex)));
+							$errors[] = array('option' => $key, 'error' => sprintf(
+							/* translators: Regular expression. */
+								__('"%s" is not a valid regular expression.', 'wordfence'), esc_html($regex)));
 						}
 					}
 					$checked = true;
@@ -1160,7 +1243,7 @@ Options -ExecCGI
 						}
 					}
 					if (count($badWhiteIPs) > 0) {
-						$errors[] = array('option' => $key, 'error' => __('Please make sure you separate your IP addresses with commas. The following whitelisted IP addresses are invalid: ', 'wordfence') . esc_html(implode(', ', $badWhiteIPs), array()));
+						$errors[] = array('option' => $key, 'error' => __('Please make sure you separate your IP addresses with commas. The following allowlisted IP addresses are invalid: ', 'wordfence') . esc_html(implode(', ', $badWhiteIPs), array()));
 					}
 					
 					$checked = true;
@@ -1232,6 +1315,18 @@ Options -ExecCGI
 					$checked = true;
 					break;
 				}
+				case 'scan_exclude':
+				{
+					$exclusionList = explode("\n", trim($value));
+					foreach ($exclusionList as $exclusion) {
+						$exclusion = trim($exclusion);
+						if ($exclusion === '*') {
+							$errors[] = array('option' => $key, 'error' => __('A wildcard cannot be used to exclude all files from the scan.', 'wordfence'));
+						}
+					}
+					$checked = true;
+					break;
+				}
 			}
 		}
 		
@@ -1239,6 +1334,23 @@ Options -ExecCGI
 			return true;
 		}
 		return $errors;
+	}
+	
+	public static function clean($changes) {
+		$cleaned = array();
+		foreach ($changes as $key => $value) {
+			if (preg_match('/^whitelistedServices\.([a-z0-9]+)$/i', $key, $matches)) {
+				if (!isset($cleaned['whitelistedServices']) || !is_array($cleaned['whitelistedServices'])) {
+					$cleaned['whitelistedServices'] = wfConfig::getJSON('whitelistedServices', array());
+				}
+				
+				$cleaned['whitelistedServices'][$matches[1]] = wfUtils::truthyToBoolean($value);
+			}
+			else {
+				$cleaned[$key] = $value;
+			}
+		}
+		return $cleaned;
 	}
 	
 	/**
@@ -1293,6 +1405,20 @@ Options -ExecCGI
 						$wafConfig->unsetConfig('learningModeGracePeriod');
 					}
 					
+					$firewall = new wfFirewall();
+					$firewall->syncStatus(true);
+					
+					if ($value == wfFirewall::FIREWALL_MODE_DISABLED) {
+						$currentUser = wp_get_current_user();
+						$username = $currentUser->user_login;
+
+						$alertCallback = array(new wfWafDeactivatedAlert($username, wfUtils::getIP()), 'send');
+						do_action('wordfence_security_event', 'wafDeactivated', array(
+							'username' => $username,
+							'ip' => wfUtils::getIP(),
+						), $alertCallback);
+					}
+					
 					$saved = true;
 					break;
 				}
@@ -1314,7 +1440,7 @@ Options -ExecCGI
 				}
 				case 'whitelistedURLParams':
 				{
-					$whitelistedURLParams = (array) $wafConfig->getConfig('whitelistedURLParams');
+					$whitelistedURLParams = (array) $wafConfig->getConfig('whitelistedURLParams', null, 'livewaf');
 					if (isset($value['delete'])) {
 						foreach ($value['delete'] as $whitelistKey => $unused) {
 							unset($whitelistedURLParams[$whitelistKey]);
@@ -1329,7 +1455,7 @@ Options -ExecCGI
 							}
 						}
 					}
-					$wafConfig->setConfig('whitelistedURLParams', $whitelistedURLParams);
+					$wafConfig->setConfig('whitelistedURLParams', $whitelistedURLParams, 'livewaf');
 					
 					if (isset($value['add'])) {
 						foreach ($value['add'] as $entry) {
@@ -1354,16 +1480,26 @@ Options -ExecCGI
 					$saved = true;
 					break;
 				}
-				case 'disableWAFIPBlocking':
-				{
-					wfConfig::set($key, wfUtils::truthyToInt($value));
-					$wafConfig->setConfig($key, wfUtils::truthyToInt($value));
-					$saved = true;
-					break;
-				}
 				case 'disableWAFBlacklistBlocking':
 				{
 					$wafConfig->setConfig($key, wfUtils::truthyToInt($value));
+					if (method_exists(wfWAF::getInstance()->getStorageEngine(), 'purgeIPBlocks')) {
+						wfWAF::getInstance()->getStorageEngine()->purgeIPBlocks(wfWAFStorageInterface::IP_BLOCKS_BLACKLIST);
+					}
+					if ($value) {
+						$cron = wfWAF::getInstance()->getStorageEngine()->getConfig('cron', array(), 'livewaf');
+						if (!is_array($cron)) {
+							$cron = array();
+						}
+						foreach ($cron as $cronKey => $cronJob) {
+							if ($cronJob instanceof wfWAFCronFetchBlacklistPrefixesEvent) {
+								unset($cron[$cronKey]);
+							}
+						}
+						$cron[] = new wfWAFCronFetchBlacklistPrefixesEvent(time() - 1);
+						wfWAF::getInstance()->getStorageEngine()->setConfig('cron', $cron, 'livewaf');
+					}
+
 					$saved = true;
 					break;
 				}
@@ -1410,6 +1546,28 @@ Options -ExecCGI
 					}
 					else {
 						wfConfig::set($key, '');
+					}
+					
+					if (method_exists(wfWAF::getInstance()->getStorageEngine(), 'purgeIPBlocks')) {
+						wfWAF::getInstance()->getStorageEngine()->purgeIPBlocks(wfWAFStorageInterface::IP_BLOCKS_BLACKLIST);
+					}
+					
+					$saved = true;
+					break;
+				}
+				case 'whitelistedServices':
+				{
+					if (is_string($value)) { //Already JSON (import/export settings)
+						wfConfig::set($key, $value);
+					}
+					else {
+						wfConfig::setJSON($key, (array) $value);
+					}
+					
+					$wafConfig->setConfig('whitelistedServiceIPs', @json_encode(wfUtils::whitelistedServiceIPs()), 'synced');
+					
+					if (method_exists(wfWAF::getInstance()->getStorageEngine(), 'purgeIPBlocks')) {
+						wfWAF::getInstance()->getStorageEngine()->purgeIPBlocks(wfWAFStorageInterface::IP_BLOCKS_BLACKLIST);
 					}
 					
 					$saved = true;
@@ -1521,6 +1679,13 @@ Options -ExecCGI
 					$saved = true;
 					break;
 				}
+				case 'email_summary_interval':
+				{
+					wfConfig::set($key, $value);
+					wfActivityReport::scheduleCronJob();
+					$saved = true;
+					break;
+				}
 				case 'email_summary_enabled':
 				{
 					$value = wfUtils::truthyToBoolean($value);
@@ -1552,7 +1717,7 @@ Options -ExecCGI
 					$value = wfUtils::truthyToBoolean($value);
 					wfConfig::set($key, $value);
 					if (class_exists('wfWAFConfig')) {
-						wfWAFConfig::set('betaThreatDefenseFeed', $value);
+						wfWAFConfig::set('betaThreatDefenseFeed', $value, 'synced');
 					}
 					$saved = true;
 					break;
@@ -1598,8 +1763,10 @@ Options -ExecCGI
 				else if (in_array($key, self::$serializedOptions)) {
 					wfConfig::set_ser($key, $value);
 				}
-				else {
-					//TODO: remove me when done with QA
+				else if (in_array($key, self::$wfCentralInternalConfig)) {
+					wfConfig::set($key, $value);
+				}
+				else if (WFWAF_DEBUG) {
 					error_log("*** DEBUG: Config option '{$key}' missing save handler.");
 				}
 			}
@@ -1608,6 +1775,7 @@ Options -ExecCGI
 		if ($apiKey !== false) {
 			$existingAPIKey = wfConfig::get('apiKey', '');
 			$apiKey = strtolower(trim($apiKey)); //Already validated above
+			$ping = false;
 			if (empty($apiKey)) { //Empty, try getting a free key
 				$api = new wfAPI('', wfUtils::getWPVersion());
 				try {
@@ -1615,11 +1783,12 @@ Options -ExecCGI
 					if ($keyData['ok'] && $keyData['apiKey']) {
 						wfConfig::set('apiKey', $keyData['apiKey']);
 						wfConfig::set('isPaid', false);
-						wfConfig::set('keyType', wfAPI::KEY_TYPE_FREE);
+						wfConfig::set('keyType', wfLicense::KEY_TYPE_FREE);
 						wordfence::licenseStatusChanged();
+						wfConfig::set('touppPromptNeeded', true);
 					}
 					else {
-						throw new Exception("The Wordfence server's response did not contain the expected elements.");
+						throw new Exception(__("The Wordfence server's response did not contain the expected elements.", 'wordfence'));
 					}
 				}
 				catch (Exception $e) {
@@ -1636,11 +1805,12 @@ Options -ExecCGI
 						wfConfig::set('isPaid', $isPaid); //res['isPaid'] is boolean coming back as JSON and turned back into PHP struct. Assuming JSON to PHP handles bools.
 						wordfence::licenseStatusChanged();
 						if (!$isPaid) {
-							wfConfig::set('keyType', wfAPI::KEY_TYPE_FREE);
+							wfConfig::set('keyType', wfLicense::KEY_TYPE_FREE);
 						}
+						$ping = true;
 					}
 					else {
-						throw new Exception("The Wordfence server's response did not contain the expected elements.");
+						throw new Exception(__("The Wordfence server's response did not contain the expected elements.", 'wordfence'));
 					}
 				}
 				catch (Exception $e) {
@@ -1648,10 +1818,14 @@ Options -ExecCGI
 				}
 			}
 			else { //Key unchanged, just ping it
+				$ping = true;
+			}
+			
+			if ($ping) {
 				$api = new wfAPI($apiKey, wfUtils::getWPVersion());
 				try {
-					$keyType = wfAPI::KEY_TYPE_FREE;
-					$keyData = $api->call('ping_api_key', array(), array('supportHash' => wfConfig::get('supportHash', '')));
+					$keyType = wfLicense::KEY_TYPE_FREE;
+					$keyData = $api->call('ping_api_key', array(), array('supportHash' => wfConfig::get('supportHash', ''), 'whitelistHash' => wfConfig::get('whitelistHash', ''), 'tldlistHash' => wfConfig::get('tldlistHash', '')));
 					if (isset($keyData['_isPaidKey'])) {
 						$keyType = wfConfig::get('keyType');
 					}
@@ -1663,13 +1837,24 @@ Options -ExecCGI
 						wfConfig::set('supportContent', $keyData['support']);
 						wfConfig::set('supportHash', $keyData['supportHash']);
 					}
+					if (isset($keyData['_whitelist']) && isset($keyData['_whitelistHash'])) {
+						wfConfig::setJSON('whitelistPresets', $keyData['_whitelist']);
+						wfConfig::set('whitelistHash', $keyData['_whitelistHash']);
+					}
+					if (isset($keyData['_tldlist']) && isset($keyData['_tldlistHash'])) {
+						wfConfig::set('tldlist', $keyData['_tldlist']);
+						wfConfig::set('tldlistHash', $keyData['_tldlistHash']);
+					}
 					if (isset($keyData['scanSchedule']) && is_array($keyData['scanSchedule'])) {
 						wfConfig::set_ser('noc1ScanSchedule', $keyData['scanSchedule']);
 						if (wfScanner::shared()->schedulingMode() == wfScanner::SCAN_SCHEDULING_MODE_AUTOMATIC) {
 							wfScanner::shared()->scheduleScans();
 						}
 					}
-					
+					if (isset($keyData['showWfCentralUI'])) {
+						wfConfig::set('showWfCentralUI', (int) $keyData['showWfCentralUI']);
+					}
+
 					wfConfig::set('keyType', $keyType);
 				}
 				catch (Exception $e){
@@ -1679,6 +1864,7 @@ Options -ExecCGI
 		}
 		
 		wfNotification::reconcileNotificationsWithOptions();
+		wfCentral::requestConfigurationSync();
 	}
 	
 	public static function restoreDefaults($section) {
@@ -1709,7 +1895,6 @@ Options -ExecCGI
 					'other_bypassLitespeedNoabort',
 					'deleteTablesOnDeact',
 					'autoUpdate',
-					'disableCookies',
 					'disableCodeExecutionUploads',
 					'email_summary_enabled',
 					'email_summary_dashboard_widget_enabled',
@@ -1725,7 +1910,6 @@ Options -ExecCGI
 			case self::OPTIONS_TYPE_FIREWALL:
 				$options = array(
 					'firewallEnabled',
-					'blockFakeBots',
 					'autoBlockScanners',
 					'loginSecurityEnabled',
 					'loginSec_strongPasswds_enabled',
@@ -1743,6 +1927,7 @@ Options -ExecCGI
 					'wafAlertOnAttacks',
 					'disableWAFIPBlocking',
 					'whitelisted',
+					'whitelistedServices',
 					'bannedURLs',
 					'loginSec_userBlacklist',
 					'neverBlockBG',
@@ -1762,8 +1947,6 @@ Options -ExecCGI
 					'max404Crawlers_action',
 					'max404Humans',
 					'max404Humans_action',
-					'maxScanHits',
-					'maxScanHits_action',
 					'blockedTime',
 					'allowed404s',
 					'wafAlertWhitelist',
@@ -1805,10 +1988,10 @@ Options -ExecCGI
 					'scansEnabled_suspiciousOptions',
 					'scansEnabled_passwds',
 					'scansEnabled_diskSpace',
+					'scansEnabled_wafStatus',
 					'scansEnabled_options',
 					'scansEnabled_wpscan_fullPathDisclosure',
 					'scansEnabled_wpscan_directoryListingEnabled',
-					'scansEnabled_dns',
 					'scansEnabled_scanImages',
 					'scansEnabled_highSense',
 					'scansEnabled_oldVersions',
@@ -1843,19 +2026,13 @@ Options -ExecCGI
 					'displayTopLevelLiveTraffic',
 				);
 				break;
-			case self::OPTIONS_TYPE_COMMENT_SPAM:
-				$options = array(
-					'other_noAnonMemberComments',
-					'other_scanComments',
-					'advancedCommentScanning',
-				);
-				break;
 			case self::OPTIONS_TYPE_DIAGNOSTICS:
 				$options = array(
 					'debugOn',
 					'startScansRemotely',
 					'ssl_verify',
 					'betaThreatDefenseFeed',
+					'wordfenceI18n',
 				);
 				break;
 			case self::OPTIONS_TYPE_ALL:
@@ -1884,7 +2061,6 @@ Options -ExecCGI
 					'other_bypassLitespeedNoabort',
 					'deleteTablesOnDeact',
 					'autoUpdate',
-					'disableCookies',
 					'disableCodeExecutionUploads',
 					'email_summary_enabled',
 					'email_summary_dashboard_widget_enabled',
@@ -1895,7 +2071,6 @@ Options -ExecCGI
 					'email_summary_excluded_directories',
 					'howGetIPs_trusted_proxies',
 					'firewallEnabled',
-					'blockFakeBots',
 					'autoBlockScanners',
 					'loginSecurityEnabled',
 					'loginSec_strongPasswds_enabled',
@@ -1913,6 +2088,7 @@ Options -ExecCGI
 					'wafAlertOnAttacks',
 					'disableWAFIPBlocking',
 					'whitelisted',
+					'whitelistedServices',
 					'bannedURLs',
 					'loginSec_userBlacklist',
 					'neverBlockBG',
@@ -1932,8 +2108,6 @@ Options -ExecCGI
 					'max404Crawlers_action',
 					'max404Humans',
 					'max404Humans_action',
-					'maxScanHits',
-					'maxScanHits_action',
 					'blockedTime',
 					'allowed404s',
 					'wafAlertWhitelist',
@@ -1967,10 +2141,10 @@ Options -ExecCGI
 					'scansEnabled_suspiciousOptions',
 					'scansEnabled_passwds',
 					'scansEnabled_diskSpace',
+					'scansEnabled_wafStatus',
 					'scansEnabled_options',
 					'scansEnabled_wpscan_fullPathDisclosure',
 					'scansEnabled_wpscan_directoryListingEnabled',
-					'scansEnabled_dns',
 					'scansEnabled_scanImages',
 					'scansEnabled_highSense',
 					'scansEnabled_oldVersions',
@@ -1995,7 +2169,6 @@ Options -ExecCGI
 					'liveTraf_maxRows',
 					'liveTraf_maxAge',
 					'displayTopLevelLiveTraffic',
-					'other_noAnonMemberComments',
 					'other_scanComments',
 					'advancedCommentScanning',
 				);

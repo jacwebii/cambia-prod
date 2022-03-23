@@ -15,6 +15,74 @@ class wfFirewall
 	const BLACKLIST_MODE_DISABLED = 'disabled';
 	const BLACKLIST_MODE_ENABLED = 'enabled';
 	
+	const UPDATE_FAILURE_RATELIMIT = 'ratelimit';
+	const UPDATE_FAILURE_UNREACHABLE = 'unreachable';
+	const UPDATE_FAILURE_FILESYSTEM = 'filesystem';
+	
+	/**
+	 * Returns a string suitable for display of the firewall status.
+	 * 
+	 * @param null|string $status
+	 * @param null|string $protection
+	 * @return string
+	 */
+	public function displayText($status = null, $protection = null) {
+		if ($status === null) { $status = $this->firewallMode(); }
+		if ($protection === null) { $protection = $this->protectionMode(); }
+		
+		switch ($status) {
+			case self::FIREWALL_MODE_ENABLED:
+				$statusText = __('Enabled', 'wordfence');
+				break;
+			case self::FIREWALL_MODE_LEARNING:
+				$statusText = __('Learning Mode', 'wordfence');
+				break;
+			default:
+				return __('Disabled', 'wordfence');
+		}
+		
+		switch ($protection) {
+			case self::PROTECTION_MODE_EXTENDED:
+				$protectionText = __('Extended Protection', 'wordfence');
+				break;
+			default:
+				$protectionText = __('Basic Protection', 'wordfence');
+				break;
+		}
+		
+		return sprintf('%s (%s)', $statusText, $protectionText);
+	}
+	
+	/**
+	 * Syncs the status from WAF to the wfConfig table if $toDatabase is true, the reverse if false.
+	 * 
+	 * @param bool $toDatabase
+	 */
+	public function syncStatus($toDatabase = true) {
+		if ($toDatabase) {
+			try {
+				$status = wfWAF::getInstance()->getStorageEngine()->getConfig('wafStatus');
+				if (in_array($status, array(self::FIREWALL_MODE_DISABLED, self::FIREWALL_MODE_LEARNING, self::FIREWALL_MODE_ENABLED))) {
+					wfConfig::set('waf_status', $status);
+				}
+			}
+			catch (Exception $e) {
+				//Ignore
+			}
+		}
+		else {
+			try {
+				$status = wfConfig::get('waf_status');
+				if (in_array($status, array(self::FIREWALL_MODE_DISABLED, self::FIREWALL_MODE_LEARNING, self::FIREWALL_MODE_ENABLED))) {
+					wfWAF::getInstance()->getStorageEngine()->setConfig('wafStatus', $status);
+				}
+			}
+			catch (Exception $e) {
+				//Ignore
+			}
+		}
+	}
+	
 	/**
 	 * Tests the WAF configuration and returns true if successful.
 	 * 
@@ -190,6 +258,10 @@ class wfFirewall
 		catch (Exception $e) {
 			//Ignore, return 0%
 		}
+		
+		if (!WFWAF_OPERATIONAL) {
+			return array(array('percentage' => 1.0, 'title' => __('Repair the Wordfence Firewall configuration.', 'wordfence')));
+		}
 
 		return array();
 	}
@@ -320,7 +392,7 @@ class wfFirewall
 			$reenbleCount = count($rules) - $enabledCount;
 			return array(
 				'percentage' => ($round ? round($percentEnabled, 2) : $percentEnabled),
-				'title'      => sprintf(_nx('Re-enable %d firewall rule.', 'Re-enable %d firewall rules.', $reenbleCount, 'wordfence'), number_format_i18n($reenbleCount)),
+				'title'      => sprintf(_n('Re-enable %d firewall rule.', 'Re-enable %d firewall rules.', $reenbleCount, 'wordfence'), number_format_i18n($reenbleCount)),
 			);
 		}
 		catch (Exception $e) {
@@ -386,7 +458,7 @@ class wfFirewall
 			}
 			return array(
 				'percentage' => 1.0,
-				'title'      => __('Enable Real-Time IP Blacklist.', 'wordfence'),
+				'title'      => __('Enable Real-Time IP Blocklist.', 'wordfence'),
 			);
 		}
 		catch (Exception $e) {
@@ -395,7 +467,7 @@ class wfFirewall
 			
 		return array(
 			'percentage' => 1.0,
-			'title'      => __('Enable Real-Time IP Blacklist.', 'wordfence'),
+			'title'      => __('Enable Real-Time IP Blocklist.', 'wordfence'),
 		);
 	}
 

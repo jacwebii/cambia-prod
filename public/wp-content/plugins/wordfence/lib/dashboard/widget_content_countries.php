@@ -3,15 +3,15 @@
 <table class="wf-table wf-table-hover">
 	<thead>
 		<tr>
-			<th colspan="2">Country</th>
-			<th>Block Count</th>
+			<th colspan="2"><?php esc_html_e('Country', 'wordfence') ?></th>
+			<th><?php esc_html_e('Block Count', 'wordfence') ?></th>
 		</tr>
 	</thead>
 	<tbody>
 	<?php foreach ($data as $l): ?>
 		<tr>
 			<td><?php echo esc_html($l['countryName']); ?></td>
-			<td><img src="<?php echo wfUtils::getBaseURL() . 'images/flags/' . esc_attr(strtolower($l['countryCode'])); ?>.png" class="wfFlag" height="11" width="16" alt="<?php echo esc_attr($l['countryName']); ?>" title="<?php echo esc_attr($l['countryName']); ?>"></td>
+			<td><span class="wf-flag <?php echo esc_attr('wf-flag-' . strtolower($l['countryCode'])); ?>" title="<?php echo esc_attr($l['countryName']); ?>"></span></td>
 			<td><?php echo esc_html(number_format_i18n($l['totalBlockCount'])); ?></td>
 		</tr>
 	<?php endforeach; ?>

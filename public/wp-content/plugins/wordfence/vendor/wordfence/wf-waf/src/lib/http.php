@@ -1,4 +1,5 @@
 <?php
+if (defined('WFWAF_VERSION') && !defined('WFWAF_RUN_COMPLETE')) {
 
 class wfWAFHTTP {
 
@@ -23,13 +24,16 @@ class wfWAFHTTP {
 	 * @return wfWAFHTTPResponse|bool
 	 * @throws wfWAFHTTPTransportException
 	 */
-	public static function get($url, $request = null) {
+	public static function get($url, $request = null, $timeout = 5, $connectTimeout = null) {
 		if (!$request) {
 			$request = new self();
 		}
 		$request->setUrl($url);
 		$request->setMethod('GET');
-		$request->setTransport(wfWAFHTTPTransport::getInstance());
+		$transport = wfWAFHTTPTransport::getInstance();
+		$transport->setConnectTimeout($connectTimeout);
+		$transport->setTimeout($timeout);
+		$request->setTransport($transport);
 		// $request->setCookies("XDEBUG_SESSION=netbeans-xdebug");
 		return $request->send();
 	}
@@ -41,14 +45,17 @@ class wfWAFHTTP {
 	 * @return wfWAFHTTPResponse|bool
 	 * @throws wfWAFHTTPTransportException
 	 */
-	public static function post($url, $post = array(), $request = null) {
+	public static function post($url, $post = array(), $request = null, $timeout = 5, $connectTimeout = null) {
 		if (!$request) {
 			$request = new self();
 		}
 		$request->setUrl($url);
 		$request->setMethod('POST');
 		$request->setBody($post);
-		$request->setTransport(wfWAFHTTPTransport::getInstance());
+		$transport = wfWAFHTTPTransport::getInstance();
+		$transport->setConnectTimeout($connectTimeout);
+		$transport->setTimeout($timeout);
+		$request->setTransport($transport);
 		return $request->send();
 	}
 
@@ -226,11 +233,14 @@ class wfWAFHTTPResponse {
 }
 
 abstract class wfWAFHTTPTransport {
-
 	private static $instance;
+	
+	private $_connectTimeout = null;
+	private $_timeout = 5;
 
 	/**
-	 * @return mixed
+	 * @return wfWAFHTTPTransport
+	 * @throws wfWAFHTTPTransportException
 	 */
 	public static function getInstance() {
 		if (!self::$instance) {
@@ -277,6 +287,20 @@ abstract class wfWAFHTTPTransport {
 	 * @return wfWAFHTTPResponse|bool
 	 */
 	abstract public function send($request);
+	
+	public function setConnectTimeout($connectTimeout) {
+		$this->_connectTimeout = $connectTimeout;
+	}
+	public function getConnectTimeout() {
+		return $this->_connectTimeout;
+	}
+	
+	public function setTimeout($timeout) {
+		$this->_timeout = $timeout;
+	}
+	public function getTimeout() {
+		return $this->_timeout;
+	}
 }
 
 class wfWAFHTTPTransportCurl extends wfWAFHTTPTransport {
@@ -290,7 +314,7 @@ class wfWAFHTTPTransportCurl extends wfWAFHTTPTransport {
 		$url = $request->getUrl();
 		if ($queryString = $request->getQueryString()) {
 			if (is_array($queryString)) {
-				$queryString = http_build_query($queryString, null, '&');
+				$queryString = http_build_query($queryString, '', '&');
 			}
 			$url .= (wfWAFUtils::strpos($url, '?') !== false ? '&' : '?') . $queryString;
 		}
@@ -323,7 +347,14 @@ class wfWAFHTTPTransportCurl extends wfWAFHTTPTransport {
 			}
 		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+		if ($this->getConnectTimeout() !== null) { curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->getConnectTimeout()); }
+		curl_setopt($ch, CURLOPT_TIMEOUT, $this->getTimeout());
+		if (defined('CURLOPT_ACCEPT_ENCODING')) {
+			curl_setopt($ch, CURLOPT_ACCEPT_ENCODING, ''); //The empty string is a magic value that means "send all supported encodings"
+		}
+		else if (defined('CURLOPT_ENCODING')) {
+			curl_setopt($ch, CURLOPT_ENCODING, '');
+		}
 		curl_setopt($ch, CURLOPT_HEADER, 1);
 		curl_setopt($ch, CURLOPT_CAINFO, WFWAF_PATH . 'cacert.pem'); //On some systems curl uses an outdated root certificate chain file
 		$curlResponse = curl_exec($ch);
@@ -336,6 +367,7 @@ class wfWAFHTTPTransportCurl extends wfWAFHTTPTransport {
 			$response = new wfWAFHTTPResponse();
 			$response->setBody($body);
 			$response->setHeaders($header);
+			$response->setStatusCode(curl_getinfo($ch, CURLINFO_HTTP_CODE));
 			return $response;
 		}
 		return false;
@@ -351,12 +383,12 @@ class wfWAFHTTPTransportStreams extends wfWAFHTTPTransport {
 	 * @throws wfWAFHTTPTransportException
 	 */
 	public function send($request) {
-		$timeout = 5;
+		$timeout = $this->getTimeout();
 
 		$url = $request->getUrl();
 		if ($queryString = $request->getQueryString()) {
 			if (is_array($queryString)) {
-				$queryString = http_build_query($queryString, null, '&');
+				$queryString = http_build_query($queryString, '', '&');
 			}
 			$url .= (wfWAFUtils::strpos($url, '?') !== false ? '&' : '?') . $queryString;
 		}
@@ -437,4 +469,5 @@ class wfWAFHTTPTransportStreams extends wfWAFHTTPTransport {
 }
 
 class wfWAFHTTPTransportException extends wfWAFException {
+}
 }

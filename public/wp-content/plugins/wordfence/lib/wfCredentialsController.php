@@ -5,6 +5,44 @@ class wfCredentialsController {
 	const NOT_LEAKED = 'not-leaked';
 	const LEAKED = 'leaked';
 	
+	const ALLOW_LEGACY_2FA_OPTION = 'allowLegacy2FA';
+	const DISABLE_LEGACY_2FA_OPTION = 'disableLegacy2FA';
+	
+	public static function allowLegacy2FA() {
+		return wfConfig::get(self::ALLOW_LEGACY_2FA_OPTION, false);
+	}
+	
+	public static function useLegacy2FA() {
+		if (!self::allowLegacy2FA()) {
+			return false;
+		}
+		return !wfConfig::get(self::DISABLE_LEGACY_2FA_OPTION, false);
+	}
+	
+	public static function hasOld2FARecords() {
+		$twoFactorUsers = wfConfig::get_ser('twoFactorUsers', array());
+		if (is_array($twoFactorUsers) && !empty($twoFactorUsers)) {
+			foreach ($twoFactorUsers as &$t) {
+				if ($t[3] == 'activated') {
+					$user = new WP_User($t[0]);
+					if ($user instanceof WP_User && $user->exists()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static function hasNew2FARecords() {
+		if (version_compare(phpversion(), '5.3', '>=') && class_exists('\WordfenceLS\Controller_DB')) {
+			global $wpdb;
+			$table = WFLSPHP52Compatability::secrets_table();
+			return !!intval($wpdb->get_var("SELECT COUNT(*) FROM `{$table}`"));
+		}
+		return false;
+	}
+	
 	/**
 	 * Queries the API and returns whether or not the password exists in the breach database.
 	 * 
@@ -68,7 +106,15 @@ class wfCredentialsController {
 		if ($value === false) {
 			return self::UNCACHED;
 		}
-		else if ($value) {
+		
+		$status = substr($value, 0, 1);
+		if (strlen($value) > 1) {
+			if (!hash_equals(substr($value, 1), hash('sha256', $user->user_pass))) { //Different hash but our clear function wasn't called so treat it as uncached
+				return self::UNCACHED;
+			}
+		}
+		
+		if ($status) {
 			return self::LEAKED;
 		}
 		return self::NOT_LEAKED;
@@ -82,7 +128,7 @@ class wfCredentialsController {
 	 */
 	public static function setCachedCredentialStatus($user, $isLeaked) {
 		$key = self::_cachedCredentialStatusKey($user);
-		set_transient($key, $isLeaked ? 1 : 0, 3600);
+		set_transient($key, ($isLeaked ? '1' : '0') . hash('sha256', $user->user_pass), 3600);
 	}
 	
 	/**
@@ -111,7 +157,7 @@ class wfCredentialsController {
 			return false;
 		}
 		
-		$result = $wpdb->get_row($wpdb->prepare("SELECT id FROM {$table_wfLogins} WHERE action = 'loginOK' AND userID = %d AND IP = %s", $id, wfUtils::inet_pton($ip)), ARRAY_A);
+		$result = $wpdb->get_row($wpdb->prepare("SELECT id FROM {$table_wfLogins} WHERE action = 'loginOK' AND userID = %d AND IP = %s LIMIT 0,1", $id, wfUtils::inet_pton($ip)), ARRAY_A);
 		if (is_array($result)) {
 			return true;
 		}

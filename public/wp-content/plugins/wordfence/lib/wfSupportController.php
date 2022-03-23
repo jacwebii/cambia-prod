@@ -8,8 +8,10 @@ class wfSupportController {
 	const ITEM_CHANGELOG = 'changelog';
 	
 	const ITEM_NOTICE_WAF_INACCESSIBLE_CONFIG = 'notice-waf-inaccessible-config';
+	const ITEM_NOTICE_WAF_MOD_PHP_FIX = 'notice-waf-mod-php-fix';
 	const ITEM_NOTICE_WAF_READ_ONLY_WARNING = 'notice-waf-read-only-warning';
 	const ITEM_NOTICE_MISCONFIGURED_HOW_GET_IPS = 'notice-misconfigured-how-get-ips';
+	const ITEM_NOTICE_SWITCH_LIVE_TRAFFIC = 'notice-switch-live-traffic';
 	
 	const ITEM_LOCKED_OUT = 'locked-out';
 	const ITEM_AJAX_BLOCKED = 'ajax-blocked';
@@ -56,6 +58,7 @@ class wfSupportController {
 	const ITEM_FIREWALL_WAF_WHITELIST = 'firewall-waf-whitelist';
 	const ITEM_FIREWALL_WAF_OPTION_DELAY_BLOCKING = 'firewall-waf-option-delay-blocking';
 	const ITEM_FIREWALL_WAF_OPTION_WHITELISTED_IPS = 'firewall-waf-option-whitelisted-ips';
+	const ITEM_FIREWALL_WAF_OPTION_WHITELISTED_SERVICES = 'firewall-waf-option-whitelisted-services';
 	const ITEM_FIREWALL_WAF_IGNORED_ALERT_IPS = 'firewall-waf-option-ignored-alert-ips';
 	const ITEM_FIREWALL_WAF_OPTION_IMMEDIATELY_BLOCK_URLS = 'firewall-waf-option-immediately-block-urls';
 	const ITEM_FIREWALL_WAF_OPTION_ENABLE_LOGIN_SECURITY = 'firewall-waf-option-enable-login-security';
@@ -70,7 +73,9 @@ class wfSupportController {
 	const ITEM_FIREWALL_WAF_OPTION_MASK_LOGIN_ERRORS = 'firewall-waf-option-mask-login-errors';
 	const ITEM_FIREWALL_WAF_OPTION_PREVENT_ADMIN_REGISTRATION = 'firewall-waf-option-prevent-admin-registration';
 	const ITEM_FIREWALL_WAF_OPTION_PREVENT_AUTHOR_SCAN = 'firewall-waf-option-prevent-author-scan';
+	const ITEM_FIREWALL_WAF_OPTION_DISABLE_APPLICATION_PASSWORDS = 'firewall-waf-option-disable-application-passwords';
 	const ITEM_FIREWALL_WAF_OPTION_BLOCK_BAD_POST = 'firewall-waf-option-block-bad-post';
+	const ITEM_FIREWALL_WAF_OPTION_CUSTOM_BLOCK_TEXT = 'firewall-waf-option-custom-block-text';
 	const ITEM_FIREWALL_WAF_OPTION_CHECK_PASSWORD = 'firewall-waf-option-check-password';
 	const ITEM_FIREWALL_WAF_OPTION_PARTICIPATE_WFSN = 'firewall-waf-option-participate-wfsn';
 	const ITEM_FIREWALL_WAF_OPTION_ENABLE_ADVANCED_BLOCKING = 'firewall-waf-option-enable-advanced-blocking';
@@ -119,7 +124,7 @@ class wfSupportController {
 	const ITEM_SCAN_OPTION_UNKNOWN_ADMINS = 'scan-option-unknown-admins';
 	const ITEM_SCAN_OPTION_PASSWORD_STRENGTH = 'scan-option-password-strength';
 	const ITEM_SCAN_OPTION_DISK_SPACE = 'scan-option-disk-space';
-	const ITEM_SCAN_OPTION_DNS_CHANGES = 'scan-option-dns-changes';
+	const ITEM_SCAN_OPTION_WAF_STATUS = 'scan-option-waf-status';
 	const ITEM_SCAN_OPTION_OUTSIDE_WORDPRESS = 'scan-option-outside-wordpress';
 	const ITEM_SCAN_OPTION_IMAGES_EXECUTABLE = 'scan-option-images-executable';
 	const ITEM_SCAN_OPTION_HIGH_SENSITIVITY = 'scan-option-high-sensitivity';
@@ -140,25 +145,34 @@ class wfSupportController {
 	const ITEM_SCAN_RESULT_PLUGIN_REMOVED = 'scan-result-plugin-removed';
 	const ITEM_SCAN_RESULT_OPTION_MALWARE_URL = 'scan-result-option-malware-url';
 	const ITEM_SCAN_RESULT_GEOIP_UPDATE = 'scan-result-geoip-update';
-	
+	const ITEM_SCAN_RESULT_WAF_DISABLED = 'scan-result-waf-disabled';
+	const ITEM_SCAN_RESULT_UNKNOWN_FILE_CORE = 'scan-result-unknown-file-in-wordpress-core';
+	const ITEM_SCAN_RESULT_SKIPPED_PATHS = 'scan-result-skipped-paths';
+	const ITEM_SCAN_RESULT_REPAIR_MODIFIED_FILES = 'scan-result-repair-modified-files';
+	const ITEM_SCAN_RESULT_MODIFIED_PLUGIN = 'scan-result-modified-plugin';
+	const ITEM_SCAN_RESULT_MODIFIED_THEME = 'scan-result-modified-theme';
+
 	const ITEM_TOOLS_TWO_FACTOR = 'tools-two-factor';
 	const ITEM_TOOLS_LIVE_TRAFFIC = 'tools-live-traffic';
 	const ITEM_TOOLS_LIVE_TRAFFIC_OPTION_ENABLE = 'tools-live-traffic-option-enable';
-	const ITEM_TOOLS_COMMENT_SPAM = 'tools-comment-spam';
-	const ITEM_TOOLS_COMMENT_SPAM_OPTION_HOLD_ANONYMOUS = 'tools-comment-spam-option-hold-anonymous';
-	const ITEM_TOOLS_COMMENT_SPAM_OPTION_SCAN = 'tools-comment-spam-option-scan';
-	const ITEM_TOOLS_COMMENT_SPAM_OPTION_ADVANCED = 'tools-comment-spam-option-advanced';
 	const ITEM_TOOLS_WHOIS_LOOKUP = 'tools-whois-lookup';
+	const ITEM_TOOLS_IMPORT_EXPORT = 'tools-import-export';
 	
 	const ITEM_DIAGNOSTICS_SYSTEM_CONFIGURATION = 'diagnostics-system-configuration';
 	const ITEM_DIAGNOSTICS_TEST_MEMORY = 'diagnostics-test-memory';
 	const ITEM_DIAGNOSTICS_TEST_EMAIL = 'diagnostics-test-email';
 	const ITEM_DIAGNOSTICS_TEST_ACTIVITY_REPORT = 'diagnostics-test-activity-report';
+	const ITEM_DIAGNOSTICS_REMOVE_CENTRAL_DATA = 'diagnostics-remove-central-data';
 	const ITEM_DIAGNOSTICS_OPTION_DEBUGGING_MODE = 'diagnostics-option-debugging-mode';
 	const ITEM_DIAGNOSTICS_OPTION_REMOTE_SCANS = 'diagnostics-option-remote-scans';
 	const ITEM_DIAGNOSTICS_OPTION_SSL_VERIFICATION = 'diagnostics-option-ssl-verification';
 	const ITEM_DIAGNOSTICS_OPTION_DISABLE_PHP_INPUT = 'diagnostics-option-disable-php-input';
 	const ITEM_DIAGNOSTICS_OPTION_BETA_TDF = 'diagnostics-option-beta-tdf';
+	const ITEM_DIAGNOSTICS_OPTION_WORDFENCE_TRANSLATIONS = 'diagnostics-option-wordfence-translations';
+
+	const ITEM_MODULE_LOGIN_SECURITY = 'module-login-security';
+	const ITEM_MODULE_LOGIN_SECURITY_2FA = 'module-login-security-2fa';
+	const ITEM_MODULE_LOGIN_SECURITY_CAPTCHA = 'module-login-security-captcha';
 	
 	public static function esc_supportURL($item = self::ITEM_INDEX) {
 		return esc_url(self::supportURL($item));
@@ -177,8 +191,10 @@ class wfSupportController {
 			//These all fall through to the query format
 				
 			case self::ITEM_NOTICE_WAF_INACCESSIBLE_CONFIG:
+			case self::ITEM_NOTICE_WAF_MOD_PHP_FIX:
 			case self::ITEM_NOTICE_WAF_READ_ONLY_WARNING:
 			case self::ITEM_NOTICE_MISCONFIGURED_HOW_GET_IPS:
+			case self::ITEM_NOTICE_SWITCH_LIVE_TRAFFIC:
 				
 			case self::ITEM_LOCKED_OUT:
 			case self::ITEM_AJAX_BLOCKED:
@@ -225,6 +241,7 @@ class wfSupportController {
 			case self::ITEM_FIREWALL_WAF_WHITELIST:
 			case self::ITEM_FIREWALL_WAF_OPTION_DELAY_BLOCKING:
 			case self::ITEM_FIREWALL_WAF_OPTION_WHITELISTED_IPS:
+			case self::ITEM_FIREWALL_WAF_OPTION_WHITELISTED_SERVICES:
 			case self::ITEM_FIREWALL_WAF_IGNORED_ALERT_IPS:
 			case self::ITEM_FIREWALL_WAF_OPTION_IMMEDIATELY_BLOCK_URLS:
 			case self::ITEM_FIREWALL_WAF_OPTION_ENABLE_LOGIN_SECURITY:
@@ -239,7 +256,9 @@ class wfSupportController {
 			case self::ITEM_FIREWALL_WAF_OPTION_MASK_LOGIN_ERRORS:
 			case self::ITEM_FIREWALL_WAF_OPTION_PREVENT_ADMIN_REGISTRATION:
 			case self::ITEM_FIREWALL_WAF_OPTION_PREVENT_AUTHOR_SCAN:
+			case self::ITEM_FIREWALL_WAF_OPTION_DISABLE_APPLICATION_PASSWORDS:
 			case self::ITEM_FIREWALL_WAF_OPTION_BLOCK_BAD_POST:
+			case self::ITEM_FIREWALL_WAF_OPTION_CUSTOM_BLOCK_TEXT:
 			case self::ITEM_FIREWALL_WAF_OPTION_CHECK_PASSWORD:
 			case self::ITEM_FIREWALL_WAF_OPTION_PARTICIPATE_WFSN:
 			case self::ITEM_FIREWALL_WAF_OPTION_ENABLE_ADVANCED_BLOCKING:
@@ -293,7 +312,7 @@ class wfSupportController {
 			case self::ITEM_SCAN_OPTION_UNKNOWN_ADMINS:
 			case self::ITEM_SCAN_OPTION_PASSWORD_STRENGTH:
 			case self::ITEM_SCAN_OPTION_DISK_SPACE:
-			case self::ITEM_SCAN_OPTION_DNS_CHANGES:
+			case self::ITEM_SCAN_OPTION_WAF_STATUS:
 			case self::ITEM_SCAN_OPTION_OUTSIDE_WORDPRESS:
 			case self::ITEM_SCAN_OPTION_IMAGES_EXECUTABLE:
 			case self::ITEM_SCAN_OPTION_HIGH_SENSITIVITY:
@@ -309,25 +328,34 @@ class wfSupportController {
 			case self::ITEM_SCAN_RESULT_PLUGIN_REMOVED:
 			case self::ITEM_SCAN_RESULT_OPTION_MALWARE_URL:
 			case self::ITEM_SCAN_RESULT_GEOIP_UPDATE:
-				
+			case self::ITEM_SCAN_RESULT_WAF_DISABLED:
+			case self::ITEM_SCAN_RESULT_UNKNOWN_FILE_CORE:
+			case self::ITEM_SCAN_RESULT_SKIPPED_PATHS:
+			case self::ITEM_SCAN_RESULT_REPAIR_MODIFIED_FILES:
+			case self::ITEM_SCAN_RESULT_MODIFIED_PLUGIN:
+			case self::ITEM_SCAN_RESULT_MODIFIED_THEME:
+
 			case self::ITEM_TOOLS_TWO_FACTOR:
 			case self::ITEM_TOOLS_LIVE_TRAFFIC:
 			case self::ITEM_TOOLS_LIVE_TRAFFIC_OPTION_ENABLE:
-			case self::ITEM_TOOLS_COMMENT_SPAM:
-			case self::ITEM_TOOLS_COMMENT_SPAM_OPTION_HOLD_ANONYMOUS:
-			case self::ITEM_TOOLS_COMMENT_SPAM_OPTION_SCAN:
-			case self::ITEM_TOOLS_COMMENT_SPAM_OPTION_ADVANCED:
 			case self::ITEM_TOOLS_WHOIS_LOOKUP:
+			case self::ITEM_TOOLS_IMPORT_EXPORT:
 				
 			case self::ITEM_DIAGNOSTICS_SYSTEM_CONFIGURATION:
 			case self::ITEM_DIAGNOSTICS_TEST_MEMORY:
 			case self::ITEM_DIAGNOSTICS_TEST_EMAIL:
 			case self::ITEM_DIAGNOSTICS_TEST_ACTIVITY_REPORT:
+			case self::ITEM_DIAGNOSTICS_REMOVE_CENTRAL_DATA:
 			case self::ITEM_DIAGNOSTICS_OPTION_DEBUGGING_MODE:
 			case self::ITEM_DIAGNOSTICS_OPTION_REMOTE_SCANS:
 			case self::ITEM_DIAGNOSTICS_OPTION_SSL_VERIFICATION:
 			case self::ITEM_DIAGNOSTICS_OPTION_DISABLE_PHP_INPUT:
 			case self::ITEM_DIAGNOSTICS_OPTION_BETA_TDF:
+			case self::ITEM_DIAGNOSTICS_OPTION_WORDFENCE_TRANSLATIONS:
+
+			case self::ITEM_MODULE_LOGIN_SECURITY:
+			case self::ITEM_MODULE_LOGIN_SECURITY_2FA:
+			case self::ITEM_MODULE_LOGIN_SECURITY_CAPTCHA:
 				return $base . '?query=' . $item;
 		}
 		

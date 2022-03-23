@@ -10,6 +10,42 @@ class wfUpdateCheck {
 	private $theme_updates = array();
 	private $api = null;
 
+	public static function syncAllVersionInfo() {
+		// Load the core/plugin/theme versions into the WAF configuration.
+		wfConfig::set('wordpressVersion', wfUtils::getWPVersion());
+		wfWAFConfig::set('wordpressVersion', wfUtils::getWPVersion(), wfWAF::getInstance(), 'synced');
+
+		if (!function_exists('get_plugins')) {
+			require_once(ABSPATH . '/wp-admin/includes/plugin.php');
+		}
+
+		$pluginVersions = array();
+		foreach (get_plugins() as $pluginFile => $pluginData) {
+			$slug = plugin_basename($pluginFile);
+			if (preg_match('/^([^\/]+)\//', $pluginFile, $matches)) {
+				$slug = $matches[1];
+			} else if (preg_match('/^([^\/.]+)\.php$/', $pluginFile, $matches)) {
+				$slug = $matches[1];
+			}
+			$pluginVersions[$slug] = isset($pluginData['Version']) ? $pluginData['Version'] : null;
+		}
+
+		wfConfig::set_ser('wordpressPluginVersions', $pluginVersions);
+		wfWAFConfig::set('wordpressPluginVersions', $pluginVersions, wfWAF::getInstance(), 'synced');
+
+		if (!function_exists('wp_get_themes')) {
+			require_once(ABSPATH . '/wp-includes/theme.php');
+		}
+
+		$themeVersions = array();
+		foreach (wp_get_themes() as $slug => $theme) {
+			$themeVersions[$slug] = isset($theme['Version']) ? $theme['Version'] : null;
+		}
+
+		wfConfig::set_ser('wordpressThemeVersions', $themeVersions);
+		wfWAFConfig::set('wordpressThemeVersions', $themeVersions, wfWAF::getInstance(), 'synced');
+	}
+
 	public function __construct() {
 		$this->api = new wfAPI(wfConfig::get('apiKey'), wfUtils::getWPVersion());
 	}
@@ -55,7 +91,7 @@ class wfUpdateCheck {
 			require_once(ABSPATH . 'wp-admin/includes/update.php');
 		}
 		
-		include( ABSPATH . WPINC . '/version.php' ); //defines $wp_version
+		include(ABSPATH . WPINC . '/version.php'); //defines $wp_version
 		
 		$update_core = get_preferred_from_update_core();
 		if ($useCachedValued && isset($update_core->last_checked) && isset($update_core->version_checked) && 12 * HOUR_IN_SECONDS > (time() - $update_core->last_checked) && $update_core->version_checked == $wp_version) { //Duplicate of _maybe_update_core, which is a private call
@@ -77,10 +113,13 @@ class wfUpdateCheck {
 	/**
 	 * Check if any plugins need an update.
 	 *
+	 * @param bool $checkVulnerabilities whether or not to check for vulnerabilities while checking updates
+	 *
 	 * @return $this
 	 */
-	public function checkPluginUpdates($useCachedValued = true) {
-		$this->plugin_updates = array();
+	public function checkPluginUpdates($useCachedValued = true, $checkVulnerabilities = true) {
+		if($checkVulnerabilities)
+			$this->plugin_updates = array();
 
 		if (!function_exists('wp_update_plugins')) {
 			require_once(ABSPATH . WPINC . '/update.php');
@@ -108,7 +147,7 @@ class wfUpdateCheck {
 		if ($update_plugins && !empty($update_plugins->response)) {
 			foreach ($update_plugins->response as $plugin => $vals) {
 				if (!function_exists('get_plugin_data')) {
-					require_once ABSPATH . '/wp-admin/includes/plugin.php';
+					require_once(ABSPATH . '/wp-admin/includes/plugin.php');
 				}
 				
 				$pluginFile = wfUtils::getPluginBaseDir() . $plugin;
@@ -136,7 +175,7 @@ class wfUpdateCheck {
 				$data['wpURL'] = (isset($valsArray['url']) ? rtrim($valsArray['url'], '/') : null);
 
 				//Check the vulnerability database
-				if ($slug !== null && isset($data['Version'])) {
+				if ($slug !== null && isset($data['Version']) && $checkVulnerabilities) {
 					$status = $this->isPluginVulnerable($slug, $data['Version']);
 					$data['vulnerable'] = !!$status;
 					if (is_string($status)) {
@@ -152,7 +191,8 @@ class wfUpdateCheck {
 					$this->all_plugins[$slug] = $data;
 				}
 
-				$this->plugin_updates[] = $data;
+				if($checkVulnerabilities)
+					$this->plugin_updates[] = $data;
 				unset($installedPlugins[$plugin]);
 			}
 		}
@@ -161,7 +201,7 @@ class wfUpdateCheck {
 		if ($update_plugins && !empty($update_plugins->no_update)) {
 			foreach ($update_plugins->no_update as $plugin => $vals) {
 				if (!function_exists('get_plugin_data')) {
-					require_once ABSPATH . '/wp-admin/includes/plugin.php';
+					require_once(ABSPATH . '/wp-admin/includes/plugin.php');
 				}
 				
 				$pluginFile = wfUtils::getPluginBaseDir() . $plugin;
@@ -178,7 +218,7 @@ class wfUpdateCheck {
 				$data['wpURL'] = (isset($valsArray['url']) ? rtrim($valsArray['url'], '/') : null);
 				
 				//Check the vulnerability database
-				if (isset($valsArray['slug']) && isset($data['Version'])) {
+				if (isset($valsArray['slug']) && isset($data['Version']) && $checkVulnerabilities) {
 					$status = $this->isPluginVulnerable($valsArray['slug'], $data['Version']);
 					$data['vulnerable'] = !!$status;
 					if (is_string($status)) {
@@ -227,10 +267,13 @@ class wfUpdateCheck {
 	/**
 	 * Check if any themes need an update.
 	 *
+	 * @param bool $checkVulnerabilities whether or not to check for vulnerabilities while checking for updates
+	 *
 	 * @return $this
 	 */
-	public function checkThemeUpdates($useCachedValued = true) {
-		$this->theme_updates = array();
+	public function checkThemeUpdates($useCachedValued = true, $checkVulnerabilities = true) {
+		if($checkVulnerabilities)
+			$this->theme_updates = array();
 
 		if (!function_exists('wp_update_themes')) {
 			require_once(ABSPATH . WPINC . '/update.php');
@@ -245,9 +288,9 @@ class wfUpdateCheck {
 			$update_themes = get_site_transient('update_themes');
 		}
 
-		if ($update_themes && (!empty($update_themes->response))) {
+		if ($update_themes && (!empty($update_themes->response)) && $checkVulnerabilities) {
 			if (!function_exists('wp_get_themes')) {
-				require_once ABSPATH . '/wp-includes/theme.php';
+				require_once(ABSPATH . '/wp-includes/theme.php');
 			}
 			$themes = wp_get_themes();
 			foreach ($update_themes->response as $theme => $vals) {
@@ -278,8 +321,11 @@ class wfUpdateCheck {
 		$this->checkPluginVulnerabilities();
 		$this->checkThemeVulnerabilities();
 	}
-	
-	public function checkPluginVulnerabilities() {
+
+	/**
+	 * @param bool $initial if true, treat as the initial scan run
+	 */
+	public function checkPluginVulnerabilities($initial=false) {
 		if (!function_exists('wp_update_plugins')) {
 			require_once(ABSPATH . WPINC . '/update.php');
 		}
@@ -297,12 +343,12 @@ class wfUpdateCheck {
 		$installedPlugins = get_plugins();
 		
 		//Get the info for plugins on wordpress.org
-		$this->checkPluginUpdates();
+		$this->checkPluginUpdates(!$initial, false);
 		$update_plugins = get_site_transient('update_plugins');
 		if ($update_plugins) {
 			if (!function_exists('get_plugin_data'))
 			{
-				require_once ABSPATH . '/wp-admin/includes/plugin.php';
+				require_once(ABSPATH . '/wp-admin/includes/plugin.php');
 			}
 			
 			if (!empty($update_plugins->response)) {
@@ -419,8 +465,11 @@ class wfUpdateCheck {
 			wfConfig::set_ser('vulnerabilities_plugin', $vulnerabilities);
 		}
 	}
-	
-	public function checkThemeVulnerabilities() {
+
+	/**
+	 * @param bool $initial whether or not this is the initial run
+	 */
+	public function checkThemeVulnerabilities($initial = false) {
 		if (!function_exists('wp_update_themes')) {
 			require_once(ABSPATH . WPINC . '/update.php');
 		}
@@ -429,14 +478,14 @@ class wfUpdateCheck {
 			require_once(ABSPATH . '/wp-admin/includes/plugin-install.php');
 		}
 		
-		$this->checkThemeUpdates();
+		$this->checkThemeUpdates(!$initial, false);
 		$update_themes = get_site_transient('update_themes');
 		
 		$vulnerabilities = array();
 		if ($update_themes && !empty($update_themes->response)) {
 			if (!function_exists('get_plugin_data'))
 			{
-				require_once ABSPATH . '/wp-admin/includes/plugin.php';
+				require_once(ABSPATH . '/wp-admin/includes/plugin.php');
 			}
 			
 			foreach ($update_themes->response as $themeSlug => $vals) {
@@ -476,15 +525,22 @@ class wfUpdateCheck {
 	}
 	
 	public function isPluginVulnerable($slug, $version) {
-		return $this->_isSlugVulnerable('vulnerabilities_plugin', $slug, $version);
+		return $this->_isSlugVulnerable('vulnerabilities_plugin', $slug, $version, function(){ $this->checkPluginVulnerabilities(true); });
 	}
 	
 	public function isThemeVulnerable($slug, $version) {
-		return $this->_isSlugVulnerable('vulnerabilities_theme', $slug, $version);
+		return $this->_isSlugVulnerable('vulnerabilities_theme', $slug, $version, function(){ $this->checkThemeVulnerabilities(true); });
 	}
 	
-	private function _isSlugVulnerable($vulnerabilitiesKey, $slug, $version) {
-		$vulnerabilities = wfConfig::get_ser($vulnerabilitiesKey, array());
+	private function _isSlugVulnerable($vulnerabilitiesKey, $slug, $version, $populateVulnerabilities=null) {
+		$vulnerabilities = wfConfig::get_ser($vulnerabilitiesKey, null);
+		if($vulnerabilities===null){
+			if(is_callable($populateVulnerabilities)){
+				$populateVulnerabilities();
+				return $this->_isSlugVulnerable($vulnerabilitiesKey, $slug, $version);
+			}
+			return false;
+		}
 		foreach ($vulnerabilities as $v) {
 			if ($v['slug'] == $slug) {
 				if ($v['fromVersion'] == 'Unknown' && $v['toVersion'] == 'Unknown') {
