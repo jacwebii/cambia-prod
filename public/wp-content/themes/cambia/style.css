@@ -1037,6 +1037,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#375cc1', end
 
 @media(max-width:640px) {
 #parallax-section h2{line-height:40px; font-size:25px;}
+.map_heading h2{line-height:40px; font-size:25px;}
+
+.map_heading h2{line-height:40px; font-size:25px;}
+
 .copyright-text{text-align:center; margin-bottom:20px;}
 .privacy-links{text-align:center;}
 .product-banner-block {margin:50px 0;}
