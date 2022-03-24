@@ -42,7 +42,7 @@ iframe {
 .proud-partner-heading{padding:0;}
 #proud-partners-section{padding: 50px 50px;}
 .home .service-block{min-height: 300px;}
-
+#case-study-section{margin-bottom:0;}
   </style>
 
 <div class="home_top_video">
