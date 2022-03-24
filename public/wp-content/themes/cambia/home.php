@@ -220,13 +220,7 @@ echo substr($content, 0, 390); ?>...</p>
 	
 
 
-	<div class="container map_heading">
-	<div class="row">
-	<div class="col-md-12">
-	<?php the_field('map_section_header');?>
-	</div>
-	</div>
-	</div><!-- container -->
+
 	
 	<!-- Worldwide-Map -->
 	<section id="worldwide-map">
