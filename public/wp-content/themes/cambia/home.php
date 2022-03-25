@@ -43,6 +43,19 @@ iframe {
 #proud-partners-section{padding: 50px 50px;}
 .home .service-block{min-height: 300px;}
 #case-study-section{margin-bottom:0;}
+.blue-btn-new{
+	  background: rgba(0, 0, 0, 0) url("img/blue-button.png") repeat scroll 0 0 / cover !important;
+	  color: #fff;
+	font-size: 15px;
+	border-radius: 50px;
+	padding: 13px 35px;
+	font-weight: 600;
+	display: inline-block;
+	margin: 25px 0 0 0;
+
+}
+.textwidgetcustom{text-align:center;margin-top:30px;}
+#service-section{margin-top: 50px;}
   </style>
 
 <div class="home_top_video">
@@ -88,8 +101,9 @@ $(document).ready(function(){
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
-			<div class="about-us-text">
-                  
+			<div class="textwidgetcustom">
+                  <h2>Custom Research and Analytics</h2>
+				  <a class="blue-btn-new" href="https://www.cambiainfo.com/custom/">Learn More</a>
 	<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
     <?php the_content(); ?>
     <?php endwhile; endif; ?>		
@@ -107,6 +121,7 @@ $(document).ready(function(){
 	<div class="container">
 		<div class="row centered">
 			<div class="col-md-12">
+			 <h2>Services We Provide</h2>
 			<?php if ( !function_exists( 'dynamic_sidebar' ) || !dynamic_sidebar('service_box_content') ) ?>	
 			</div>
 		</div><!-- row -->
@@ -132,7 +147,7 @@ $(document).ready(function(){
 	
 	
 			<!-- Proud Partners -->
-		<div id="proud-partners-section">
+		<div id="proud-partners-section" style="display:none;">
 		<div class="container">
 			<div class="row centered">
 			<div class="col-lg-12">
