@@ -55,10 +55,12 @@ iframe {
 
 }
 .blue-btn-new:hover {
-    background: rgba(0, 0, 0, 0) url("https://www.cambiainfo.com/wp-content/themes/cambia/img/blue-button-hover.png") repeat scroll 0 0 / cover !important;
+    background: rgba(0, 0, 0, 0) url("https://www.cambiainfo.com/wp-content/themes/cambia/img/blue-button-hover.png") repeat scroll 0 0 / cover !important; color: #fff;
 }
 .textwidgetcustom{text-align:center;margin-top:50px;}
 #service-section{margin-top: 50px;padding-top: 50px;}
+.boxnew{font-size: 16px;color: #01144E;}
+
   </style>
 
 <div class="home_top_video">
