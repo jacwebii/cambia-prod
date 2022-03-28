@@ -3,11 +3,16 @@
  *
  @subpackage Cambia Information Group
   */
+  $postId = get_queried_object_id();
 ?>
 
 <style>
 #about-service-section p{padding: 0;margin-bottom:0;}
 .about-service-block {min-height: 330px;}
+<?php if($postId == 138) { ?>
+.top_service_content_with_image{display:none;}
+.service_parallax{margin-top:0;}
+<?php } ?>
 </style>
 
 <?php  if( ! (is_front_page() || is_page( 'research-in-action' ) || is_page( 'full-service-solutions' ))) {?>
@@ -19,7 +24,9 @@
 			<div class="cambia-business-text">
 			<h2>What can Cambia do for your business?</h2>
 			<ul class="business-links">
+			<?php if (!in_array($postId, array(73, 2861, 138))) { ?>
 			<li><a href="<?php echo home_url();?>/research-in-action/" class="col-md-12 green-btn">Research in Action</a></li>
+			<?php } ?>
 			<li><a href="<?php echo home_url();?>/contact-us/" class="col-md-12 blue-btn">Contact Us</a></li>
 			</ul>
 			</div>
