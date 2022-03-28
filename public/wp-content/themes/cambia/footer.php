@@ -11,6 +11,7 @@
 .about-service-block {min-height: 330px;}
 <?php if($postId == 138) { ?>
 .top_service_content_with_image{display:none;}
+.mobile_top_banner{display:none;}
 .service_parallax{margin-top:0;}
 <?php } ?>
 </style>
