@@ -43,6 +43,15 @@ iframe {
 #proud-partners-section{padding: 50px 50px;}
 .home .service-block{min-height: 315px;}
 .home .service-block h4{min-height: 100px;}
+
+
+@media (min-width: 970px) and (max-width: 1175px){
+	.home .service-block{min-height: 350px;}
+	.home .service-block h4{min-height: 140px;}
+    
+}
+
+
 #case-study-section{margin-bottom:0;}
 .blue-btn-new{
 	  background: rgba(0, 0, 0, 0) url("https://www.cambiainfo.com/wp-content/themes/cambia/img/blue-button.png") repeat scroll 0 0 / cover !important;

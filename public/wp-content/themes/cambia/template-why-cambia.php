@@ -133,7 +133,7 @@ get_header();?>
 				<div class="textwidget">
 					<h3>pivotal360<sup><strong>®</strong></sup></h3>
 					<h6><i>Holistic Brand Assessment</i></h6>
-				<p><a class="blue-btn" href="pivotal360/" target="_blank" rel="noopener">Read More</a></p>
+				<p><a class="blue-btn" href="https://www.cambiainfo.com/pivotal360/" target="_blank" rel="noopener">Read More</a></p>
 			</div>
 		</div>
 		</div>
@@ -142,7 +142,7 @@ get_header();?>
 				<div class="textwidget">
 					<h3>pivotalTESTING<sup><strong>®</strong></sup></h3>
 					<h6> <i>Communication Testing </i> </h6>
-					<p><a class="blue-btn" href="pivotal-testing/" target="_blank" rel="noopener">Read More</a></p>
+					<p><a class="blue-btn" href="https://www.cambiainfo.com/pivotal-testing/" target="_blank" rel="noopener">Read More</a></p>
 				</div>
 			</div>
 		</div>
@@ -151,7 +151,7 @@ get_header();?>
 				<div class="textwidget">
 					<h3>pivotalROI<sup><strong>®</strong></sup></h3>
 					<h6><i>Optimizing Marketing Investments</i></h6>
-					<p><a class="blue-btn" href="pivotalroi/" target="_blank" rel="noopener">Read More</a></p>
+					<p><a class="blue-btn" href="https://www.cambiainfo.com/pivotalroi/" target="_blank" rel="noopener">Read More</a></p>
 				</div>
 			</div>
 		</div>
@@ -160,7 +160,7 @@ get_header();?>
 				<div class="textwidget">
 					<h3>Custom Solutions</h3>
 					<h6><i>Tailored Research Solutions</i></h6>
-					<p><a class="blue-btn" href="custom/" target="_blank" rel="noopener">Read More</a></p>
+					<p><a class="blue-btn" href="https://www.cambiainfo.com/custom/" target="_blank" rel="noopener">Read More</a></p>
 				</div>
 			</div>
 		</div>	
