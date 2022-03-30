@@ -45,7 +45,7 @@ iframe {
 .home .service-block h4{min-height: 100px;}
 
 
-@media (min-width: 970px) and (max-width: 1175px){
+@media (min-width: 970px) and (max-width: 1200px){
 	.home .service-block{min-height: 350px;}
 	.home .service-block h4{min-height: 140px;}
     
