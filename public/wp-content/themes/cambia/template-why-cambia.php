@@ -158,8 +158,8 @@ get_header();?>
 		<div class="col-md-3">
 			<div class="service-block about-service-block">			
 				<div class="textwidget">
-					<h3>Custom Research</h3>
-					<h6><i>Tailored Research Solutions CL </i></h6>
+					<h3>Custom Solutions</h3>
+					<h6><i>Tailored Research Solutions</i></h6>
 					<p><a class="blue-btn" href="custom/" target="_blank" rel="noopener">Read More</a></p>
 				</div>
 			</div>
