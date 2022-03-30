@@ -26,7 +26,7 @@
 			<h2>What can Cambia do for your business?</h2>
 			<ul class="business-links">
 			<?php if (!in_array($postId, array(73, 2861, 138))) { ?>
-			<li><a href="<?php echo home_url();?>/research-in-action/" class="col-md-12 green-btn">Research in Action</a></li>
+			<!-- <li><a href="<?php echo home_url();?>/research-in-action/" class="col-md-12 green-btn">Research in Action</a></li> -->
 			<?php } ?>
 			<li><a href="<?php echo home_url();?>/contact-us/" class="col-md-12 blue-btn">Contact Us</a></li>
 			</ul>

@@ -35,6 +35,15 @@
   'after_title' => '</h3>',
  ));
  
+     if ( function_exists('register_sidebar') ) 
+ register_sidebar(array(
+  'name' => 'Solution Box',
+  'id' => 'solution_box',
+  'before_widget' => '<div class="col-md-3"><div class="service-block about-service-block">',
+  'after_widget' => '</div></div>',
+  'before_title' => '<h3>',
+  'after_title' => '</h3>',
+ ));
  
   if ( function_exists('register_sidebar') ) 
  register_sidebar(array(

@@ -58,7 +58,7 @@ iframe {
     background: rgba(0, 0, 0, 0) url("https://www.cambiainfo.com/wp-content/themes/cambia/img/blue-button-hover.png") repeat scroll 0 0 / cover !important; color: #fff;
 }
 .textwidgetcustom{text-align:center;margin-top:50px;}
-#service-section{margin-top: 50px;padding-top: 50px;}
+#service-section{margin-top: 0px;padding-top: 50px;}
 .boxnew{font-size: 16px;color: #01144E;}
 
   </style>
@@ -102,13 +102,14 @@ $(document).ready(function(){
 
 <!--Video Section Ends Here-->	
 
-
+<section id="about-top-banner" style="background-image: url(https://www.cambiainfo.com/wp-content/uploads/2018/07/Custom-Solutions-Banner5.jpg);clear: both;margin-top: 50px;">
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
-			<div class="textwidgetcustom">
-                  <h2>Custom Research and Analytics</h2>
-				  <a class="blue-btn-new" href="https://www.cambiainfo.com/custom/">Learn More</a>
+			<div class="textwidgetcustom custom-research-block">
+                  <h1>Custom Research and Analytics</h1>
+				   <?php the_field('custom_research'); ?>
+				 <a class="blue-btn-new" href="https://www.cambiainfo.com/custom/">Learn More</a>
 	<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
     <?php the_content(); ?>
     <?php endwhile; endif; ?>		
@@ -118,7 +119,7 @@ $(document).ready(function(){
 			</div>
 	</div><!-- row -->
 	</div><!-- container -->
-
+</section>
 
 
 
