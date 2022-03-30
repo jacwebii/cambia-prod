@@ -100,12 +100,15 @@ get_header();?>
 	</section><?php */?><!-- Proud Partners -->
 	
 
-	
+<?php
+  $postId = get_queried_object_id();
+?>
 
 
+<?php if($postId != 8) { ?>
 
 <section id="about-service-section">
-	<div class="container-fluid">
+	<div class="container-fluid c">
 		<div class="row centered">
 			<div class="col-md-12">
 			<?php if ( !function_exists( 'dynamic_sidebar' ) || !dynamic_sidebar('service_box_content') ) ?>	
@@ -119,7 +122,54 @@ get_header();?>
 	</div><!-- container -->
 	</section>
 	
+<?php } else { ?>
+<section id="about-service-section">
+	<div class="container-fluid">
 
+		
+		<div class="row centered">
+		<div class="col-md-3">
+			<div class="service-block about-service-block">
+				<div class="textwidget">
+					<h3>pivotal360<sup><strong>®</strong></sup></h3>
+					<h6><i>Holistic Brand Assessment</i></h6>
+				<p><a class="blue-btn" href="pivotal360/" target="_blank" rel="noopener">Read More</a></p>
+			</div>
+		</div>
+		</div>
+		<div class="col-md-3">
+			<div class="service-block about-service-block">			
+				<div class="textwidget">
+					<h3>pivotalTESTING<sup><strong>®</strong></sup></h3>
+					<h6> <i>Communication Testing </i> </h6>
+					<p><a class="blue-btn" href="pivotal-testing/" target="_blank" rel="noopener">Read More</a></p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="service-block about-service-block">			
+				<div class="textwidget">
+					<h3>pivotalROI<sup><strong>®</strong></sup></h3>
+					<h6><i>Optimizing Marketing Investments</i></h6>
+					<p><a class="blue-btn" href="pivotalroi/" target="_blank" rel="noopener">Read More</a></p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="service-block about-service-block">			
+				<div class="textwidget">
+					<h3>Custom Research</h3>
+					<h6><i>Tailored Research Solutions CL </i></h6>
+					<p><a class="blue-btn" href="custom/" target="_blank" rel="noopener">Read More</a></p>
+				</div>
+			</div>
+		</div>	
+		</div>		<!-- row -->
+
+	</div><!-- container -->
+</section>
+
+<?php } ?>
 	
 	
 <div class="main_content">
