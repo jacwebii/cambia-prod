@@ -956,6 +956,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#375cc1', end
 #about-top-banner{background:#79b168; min-height:auto;}
 .about-banner-block {padding: 60px 0 35px 0;}
 .about-banner-block h3, .about-banner-block p{text-align:center;}
+.custom-research-block {padding: 40px 0 0 0;}
 #product-detail-section h2, .innovative-heading-text h2{font-size:20px;}
 #product-tab-section ul li a{width:auto; padding:20px 30px;}
 #product-banner{min-height:380px;}
