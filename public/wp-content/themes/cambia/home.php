@@ -57,7 +57,7 @@ iframe {
 .blue-btn-new:hover {
     background: rgba(0, 0, 0, 0) url("https://www.cambiainfo.com/wp-content/themes/cambia/img/blue-button-hover.png") repeat scroll 0 0 / cover !important; color: #fff;
 }
-.textwidgetcustom{text-align:center;margin-top:50px;}
+.textwidgetcustom{text-align:center;margin-bottom:10px;}
 #service-section{margin-top: 0px;padding-top: 50px;}
 .boxnew{font-size: 16px;color: #01144E;}
 
@@ -102,7 +102,7 @@ $(document).ready(function(){
 
 <!--Video Section Ends Here-->	
 
-<section id="about-top-banner" style="background-image: url(https://www.cambiainfo.com/wp-content/uploads/2018/07/Custom-Solutions-Banner5.jpg);clear: both;margin-top: 50px;">
+<section id="about-top-banner" style="background-image: url(https://www.cambiainfo.com/wp-content/uploads/2018/07/Custom-Solutions-Banner5.jpg);clear: both;">
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
