@@ -6,6 +6,15 @@ get_header();?>
 
 <style>
 #about-top-banner{margin: 100px 0 0 0; background:#273252 url(img/about-banner-image.jpg) no-repeat center top;  min-height:460px; background-size: cover;}
+.about-service-block{min-height: 315px;}
+.about-service-block h3{min-height: 100px;}
+
+
+@media (min-width: 970px) and (max-width: 1200px){
+	.about-service-block{min-height: 350px;}
+	.about-service-block h3{min-height: 140px;}
+    
+}
 </style>
 
 

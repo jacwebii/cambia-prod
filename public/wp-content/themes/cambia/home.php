@@ -70,6 +70,13 @@ iframe {
 .textwidgetcustom{text-align:center;margin-bottom:10px;}
 #service-section{margin-top: 0px;padding-top: 50px;}
 .boxnew{font-size: 16px;color: #01144E;}
+.custom-section p {
+  font-size: 16px;
+  color: #fff;
+  padding: 0 10%;
+  margin: 0;
+  line-height: 38px;
+}
 
   </style>
 
@@ -112,11 +119,11 @@ $(document).ready(function(){
 
 <!--Video Section Ends Here-->	
 
-<section id="about-top-banner" style="background-image: url(https://www.cambiainfo.com/wp-content/uploads/2018/07/Custom-Solutions-Banner5.jpg);clear: both;">
+<section id="about-top-banner" style="background-image: url(https://www.cambiainfo.com/wp-content/themes/cambia/img/cambia-custom-research-analytics.jpg);clear: both;">
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
-			<div class="textwidgetcustom custom-research-block">
+			<div class="textwidgetcustom custom-research-block custom-section">
                   <h1>Custom Research and Analytics</h1>
 				   <?php the_field('custom_research'); ?>
 				 <a class="blue-btn-new" href="https://www.cambiainfo.com/custom/">Learn More</a>
