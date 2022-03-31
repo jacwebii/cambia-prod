@@ -84,6 +84,19 @@ iframe {
   margin: 0 0 20px 0;
   font-weight: bold;
 }
+.custom-research-block{padding:40px 0 0 0;}
+@media (max-width: 640px){
+	.custom-section h1 {
+	  line-height: 30px;
+	  font-size: 25px;
+	}
+	.textwidgetcustom {
+	  margin-bottom: 20px;
+	}
+	.custom-research-block {
+	  padding: 100px 0 0 0;
+	}
+}
   </style>
 
 <div class="home_top_video">

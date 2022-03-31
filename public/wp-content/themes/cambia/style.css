@@ -549,7 +549,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#60c29f', end
 /* About Us CSS */
 #about-top-banner{margin: 100px 0 0 0; background:#273252 url(img/about-banner-image.jpg) no-repeat center top;  min-height:460px; background-size: cover;}
 .about-banner-block{padding:190px 0 0 0;}
-.custom-research-block{padding:100px 0 0 0;}
+.custom-research-block{padding:40px 0 0 0;}
 .custom-research-block p{color:#fff; font-size:20px; font-weight:400; text-align:center;}
 
 .container-fluid {padding-right:15px; padding-left:15px; margin-right:auto;
