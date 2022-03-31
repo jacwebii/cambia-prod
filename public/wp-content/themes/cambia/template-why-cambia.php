@@ -9,12 +9,13 @@ get_header();?>
 .about-service-block{min-height: 315px;}
 .about-service-block h3{min-height: 100px;}
 
-
+<!-- 
 @media (min-width: 970px) and (max-width: 1200px){
 	.about-service-block{min-height: 350px;}
 	.about-service-block h3{min-height: 140px;}
     
 }
+-->
 </style>
 
 
