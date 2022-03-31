@@ -77,7 +77,13 @@ iframe {
   margin: 0;
   line-height: 38px;
 }
-
+.custom-section h1 {
+  font-size: 50px;
+  color: #fff;
+  padding: 0;
+  margin: 0 0 20px 0;
+  font-weight: bold;
+}
   </style>
 
 <div class="home_top_video">
